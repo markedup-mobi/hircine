@@ -72,7 +72,7 @@ namespace Hircine.Core.Tests.Runtime
         {
             var commandObject = new IndexBuildCommand()
             {
-                AssemblyPaths = new string[] { "System.Diagnostics" },
+                AssemblyPaths = new string[] { "Hircine.Core.dll" },
                 UseEmbedded = true
             };
 

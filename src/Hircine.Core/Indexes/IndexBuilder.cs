@@ -23,7 +23,13 @@ namespace Hircine.Core.Indexes
             _indexAssembly = indexAssembly;
         }
 
-        public Task<IndexBuildResult> BuildIndexAsync(AbstractIndexCreationTask indexInstance, Action<IndexBuildResult> progressCallBack)
+        /// <summary>
+        /// Build a single index asynchronously
+        /// </summary>
+        /// <param name="indexInstance">An activated AbstractIndexCreationTask instance</param>
+        /// <param name="progressCallBack">A callback we can use to report on the progress of a batch job; default is null</param>
+        /// <returns>A task containing an IndexBuildResult report for this specific index</returns>
+        public Task<IndexBuildResult> BuildIndexAsync(AbstractIndexCreationTask indexInstance, Action<IndexBuildResult> progressCallBack = null)
         {
             return Task.Factory.StartNew(() => indexInstance.Execute(_documentStore))
                 .ContinueWith(result =>
@@ -53,15 +59,25 @@ namespace Hircine.Core.Indexes
                                   });
         }
 
-        public IndexBuildResult BuildIndex(AbstractIndexCreationTask index)
+        /// <summary>
+        /// Build a single index synchronously
+        /// </summary>
+        /// <param name="indexInstance">An activated AbstractIndexCreationTask instance</param>
+        /// <returns>An IndexBuildResult report for this specific index</returns>
+        public IndexBuildResult BuildIndex(AbstractIndexCreationTask indexInstance)
         {
-            var buildIndexTask = BuildIndexAsync(index, null);
+            var buildIndexTask = BuildIndexAsync(indexInstance, null);
 
             buildIndexTask.Wait();
 
             return buildIndexTask.Result;
         }
 
+        /// <summary>
+        /// Synchronous method for running a batch index creation job against a database
+        /// </summary>
+        /// <param name="progressCallBack">callback method for reporting on the progress of the job</param>
+        /// <returns>A completed IndexBuildReport covering all of the indexes found in the assembly</returns>
         public IndexBuildReport Run(Action<IndexBuildResult> progressCallBack)
         {
             var task = RunAsync(progressCallBack);
@@ -71,6 +87,11 @@ namespace Hircine.Core.Indexes
             return task.Result;
         }
 
+        /// <summary>
+        /// Asynchronous method for running a batch index creation job against a database
+        /// </summary>
+        /// <param name="progressCallBack">callback method for reporting on the progress of the job</param>
+        /// <returns>A task which returns a completed IndexBuildReport covering all of the indexes found in the assembly</returns>
         public Task<IndexBuildReport> RunAsync(Action<IndexBuildResult> progressCallBack)
         {
             //Load our indexes
@@ -96,6 +117,9 @@ namespace Hircine.Core.Indexes
 
         #region Implementation of IDisposable
 
+        /// <summary>
+        /// Disposes the documentstore contained inside the IndexBuilder
+        /// </summary>
         public void Dispose()
         {
             if (_documentStore != null)

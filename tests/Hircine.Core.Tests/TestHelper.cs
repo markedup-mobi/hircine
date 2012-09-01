@@ -28,5 +28,16 @@ namespace Hircine.Core.Tests
                 return Path.Combine(binFolder, TestHelper.ValidTestAssemblyPath);
             }
         }
+
+        /// <summary>
+        /// Absolute path to an assembly that does not exist
+        /// </summary>
+        public static string InvalidAssemblyPath
+        {
+            get
+            {
+                return Path.Combine(Path.GetTempPath(), TestHelper.ValidTestAssemblyPath);
+            }
+        }
     }
 }

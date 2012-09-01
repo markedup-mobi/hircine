@@ -105,6 +105,7 @@
     <Compile Include="Indexes\IndexCreationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\AssemblyLoaderTests.cs" />
+    <Compile Include="Runtime\IndexJobManagerAssemblyLoadTests.cs" />
     <Compile Include="TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>

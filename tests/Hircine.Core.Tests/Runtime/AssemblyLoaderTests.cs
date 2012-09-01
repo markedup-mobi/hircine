@@ -26,7 +26,7 @@ namespace Hircine.Core.Tests.Runtime
         [Test(Description = "Should get a false on our can-find assembly method for an assembly that does not exist")]
         public void Should_Not_Find_Assembly_at_Bad_Path()
         {
-            var fakeAssemblyPath = Path.Combine(Path.GetTempPath(), TestHelper.ValidTestAssemblyPath);
+            var fakeAssemblyPath = TestHelper.InvalidAssemblyPath;
             Assert.IsFalse(AssemblyRuntimeLoader.CanFindAssembly(fakeAssemblyPath));
         }
 

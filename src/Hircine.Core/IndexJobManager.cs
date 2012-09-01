@@ -70,9 +70,11 @@ namespace Hircine.Core
             //Only run this task if we haven't done it before
             if (IndexAssemblies.Count == 0)
             {
+                //Iterate through the list of assemblies and load them into memory
                 foreach (var assemblyPath in BuildInstructions.AssemblyPaths)
                 {
-
+                    var assembly = AssemblyRuntimeLoader.LoadAssembly(assemblyPath);
+                    IndexAssemblies.Add(assembly);
                 }
             }
         }

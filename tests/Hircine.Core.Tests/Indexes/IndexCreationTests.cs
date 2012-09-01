@@ -60,9 +60,9 @@ namespace Hircine.Core.Tests.Indexes
         #region Test Indexes
 
         //Should be able to create this index, a valid multi-map reduce index
-        public class ValidMultiMapIndex : AbstractMultiMapIndexCreationTask<TotalDocumentsWithTagPerDay>
+        public class ValidMultiMapReduceIndex : AbstractMultiMapIndexCreationTask<TotalDocumentsWithTagPerDay>
         {
-            public ValidMultiMapIndex()
+            public ValidMultiMapReduceIndex()
             {
                 AddMap<SimpleModel>(models => from model in models
                                                   select new
@@ -127,10 +127,6 @@ namespace Hircine.Core.Tests.Indexes
             }
         }
 
-        //Should be able to create this index, a valid map/reduce index
-
-        //Should NOT be able to create this index, an INVALID map/reduce index
-
         #endregion
 
         #region Tests
@@ -183,6 +179,77 @@ namespace Hircine.Core.Tests.Indexes
                 Assert.IsNotNull(indexBuildResult);
                 Assert.AreEqual(invalidMultiMapIndex.IndexName, indexBuildResult.IndexName);
                 Assert.AreEqual(BuildResult.Failed, indexBuildResult.Result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                indexBuilder.Dispose();
+            }
+        }
+
+        [Test(Description = "We should recieve a success notification when we are able to successfully build an index against RavenDB")]
+        public void Should_Report_IndexCreationSuccess_When_Building_Valid_Index()
+        {
+            var validMultiMapIndex = new ValidMultiMapReduceIndex();
+
+            var embeddedDb = _ravenInstanceFactory.GetEmbeddedInstance(runInMemory: true);
+            embeddedDb.Initialize();
+
+            var indexBuilder = new IndexBuilder(embeddedDb, _indexAssembly);
+
+            try
+            {
+
+                var indexBuildResult = indexBuilder.BuildIndex(validMultiMapIndex);
+
+                Assert.IsNotNull(indexBuildResult);
+                Assert.AreEqual(validMultiMapIndex.IndexName, indexBuildResult.IndexName);
+                Assert.AreEqual(BuildResult.Success, indexBuildResult.Result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                indexBuilder.Dispose();
+            }
+        }
+
+        [Test(Description = "Should be able to report progress on batch jobs via the callback we pass in without any issues")]
+        public void Should_Report_Progress_on_Batch_Jobs()
+        {
+            //Assert one pre-condition: must have n > 0 indexes in the assembly before we begin
+            var numberOfTargetIndexes = AssemblyRuntimeLoader.GetRavenDbIndexes(_indexAssembly).Count;
+            Assert.IsTrue(numberOfTargetIndexes > 0, "Pre-condition failed: must have at least 1 index in the defined assembly");
+
+            var embeddedDb = _ravenInstanceFactory.GetEmbeddedInstance(runInMemory: true);
+            embeddedDb.Initialize();
+
+            var listBuildResults = new List<IndexBuildResult>();
+
+            var indexBuilder = new IndexBuilder(embeddedDb, _indexAssembly);
+            try
+            {
+                var indexBuildResults = indexBuilder.Run(x =>
+                                                             {
+                                                                 //Add the results to the list as the test runs
+                                                                 listBuildResults.Add(x);
+                                                             });
+
+                //Assert that the job was valid first
+                Assert.IsNotNull(indexBuildResults);
+                Assert.IsTrue(indexBuildResults.Completed > 0, "Should have been able to successfully build at least 1 index");
+                Assert.AreEqual(numberOfTargetIndexes, indexBuildResults.Completed, "Expected the number of built indexes to match the number of indexes defined in the assembly");
+                Assert.IsTrue(indexBuildResults.Cancelled == 0, "Should not have had any index building jobs cancelled");
+                Assert.IsTrue(indexBuildResults.Failed == 0, "Should not have had any index building jobs fail");
+
+                //Now assert that progress was reported correctly and completely
+                Assert.AreEqual(numberOfTargetIndexes, listBuildResults.Count , "Expected the number of calls against the progress method to be equal to the number of indexes in the assembly");
+                Assert.AreEqual(indexBuildResults.Completed, listBuildResults.Count, "Expected the number of calls against the progress method to be equal to the number of valid indexes built from the assembly, which should be ALL of them in this case");
             }
             catch (InvalidOperationException ex)
             {

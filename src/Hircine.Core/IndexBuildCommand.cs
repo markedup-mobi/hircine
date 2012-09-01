@@ -13,12 +13,14 @@
         /// <summary>
         /// Tells the IndexJobManager to only execute against one database at a time
         /// </summary>
-        public bool ExecuteJobsSynchronously { get; set; }
+        public bool ExecuteJobsSequentially { get; set; }
 
         /// <summary>
-        /// If a single index build result comes back negative, the job will stop will stop if we're running synchronously
+        /// If a single index build result comes back negative, the job will stop will stop if we're running sequentially.
+        /// 
+        /// This flag will override that behavior and continue building even if there are failures
         /// </summary>
-        public bool TermineJobOnFailure { get; set; }
+        public bool ContinueJobOnFailure { get; set; }
 
         /// <summary>
         /// The set of all connection strings for each server we want to build against"

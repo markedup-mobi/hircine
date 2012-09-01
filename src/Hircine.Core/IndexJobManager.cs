@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Hircine.Core.Connectivity;
 using Hircine.Core.Indexes;
 using Hircine.Core.Runtime;
@@ -38,7 +39,7 @@ namespace Hircine.Core
         /// <summary>
         /// Internal method for connecting to all of the specified RavenDB servers
         /// </summary>
-        private void BuildDbInstances()
+        private void LoadDbInstances()
         {
             //If we haven't attempted to add to the contents of the collection yet
             if (RavenInstances.Count == 0)
@@ -100,7 +101,8 @@ namespace Hircine.Core
                     {
                         //Success!
                         jobResult.WasFound = true;
-                    }else
+                    }
+                    else
                     {
                         //Fail - wasn't able to find any RavenDB indexes in this assembly
                         jobResult.WasFound = false;
@@ -112,7 +114,7 @@ namespace Hircine.Core
                     jobResult.WasFound = false;
                     jobResult.JobException = new FileNotFoundException(string.Format("Unable to find assembly located at {0}", assemblyPath));
                 }
-                
+
                 assemblyReport.JobResults.Add(jobResult);
             }
 
@@ -126,7 +128,7 @@ namespace Hircine.Core
         public JobReport CanConnectToDbs()
         {
             //If there are any errors with the connection string syntax themselves, those will be passed directly to the caller
-            BuildDbInstances();
+            LoadDbInstances();
 
             var connectivityReport = new JobReport();
 
@@ -159,13 +161,81 @@ namespace Hircine.Core
         }
 
         /// <summary>
+        /// Default method for executing a build report - will execute either parallel or synchronous strategy depending upon the IndexBuildCommand
+        /// </summary>
+        /// <param name="progressCallback">An optional callback method to update the caller on the job's progress</param>
+        /// <returns>A list of IndexBuildReports, one for each database</returns>
+        public IList<IndexBuildReport> Build(Action<IndexBuildResult> progressCallback = null)
+        {
+            //Load our assemblies and initialize our connections to the databases
+            LoadAssemblies();
+            LoadDbInstances();
+
+            if (BuildInstructions.ExecuteJobsSequentially)
+                return BuildSequentially(progressCallback);
+            else
+            {
+                var buildTask = Task.Factory.ContinueWhenAll(BuildAsync(progressCallback).ToArray(), tasks => tasks.Select(x => x.Result).ToList());
+                buildTask.Wait();
+                return buildTask.Result;
+            }
+        }
+
+        /// <summary>
+        /// Async method for building tasks in parallel - can be called directly by the application if they want to wait on the results of the tasks
+        /// </summary>
+        /// <param name="progressCallback">An optional callback method to update the caller on the job's progress</param>
+        /// <returns>A list of Tasks which return IndexBuildReports, one for each database</returns>
+        public IList<Task<IndexBuildReport>> BuildAsync(Action<IndexBuildResult> progressCallback = null)
+        {
+            //Load our assemblies and initialize our connections to the databases
+            LoadAssemblies();
+            LoadDbInstances();
+
+            var tasks = new List<Task<IndexBuildReport>>();
+
+            //Iterate over our collection of DB instances
+            foreach (var ravenInstance in RavenInstances)
+            {
+                //Create a new index builder
+                var indexBuilder = new IndexBuilder(ravenInstance.Value, IndexAssemblies.ToArray());
+                tasks.Add(indexBuilder.RunAsync(progressCallback));
+            }
+
+            return tasks;
+        }
+
+        /// <summary>
         /// Synchronous method for reporting on the results of index build tasks across all assemblies and indexes
         /// </summary>
         /// <param name="progressCallback">An optional callback method that reports on the success of building an individual index</param>
-        /// <returns></returns>
-        public IList<IndexBuildReport> Build(Action<IndexBuildResult> progressCallback = null)
+        /// <returns>A list of IndexBuildReports, one for each database</returns>
+        public IList<IndexBuildReport> BuildSequentially(Action<IndexBuildResult> progressCallback = null)
         {
-            
+            //Load our assemblies and initialize our connections to the databases
+            LoadAssemblies();
+            LoadDbInstances();
+
+            var reports = new List<IndexBuildReport>();
+
+            //Iterate over our collection of DB instances
+            foreach (var ravenInstance in RavenInstances)
+            {
+                //Create a new index builder
+                using (var indexBuilder = new IndexBuilder(ravenInstance.Value, IndexAssemblies.ToArray()))
+                {
+                    var buildReport = indexBuilder.Run(progressCallback);
+                    reports.Add(buildReport);
+                    if (buildReport.Failed > 0 && !BuildInstructions.ContinueJobOnFailure)
+                    {
+                        //Exit the loop
+                        break;
+                    }
+                }
+
+            }
+
+            return reports;
         }
 
         #region Implementation of IDisposable

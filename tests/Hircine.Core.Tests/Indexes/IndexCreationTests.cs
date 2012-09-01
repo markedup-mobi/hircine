@@ -16,8 +16,6 @@ namespace Hircine.Core.Tests.Indexes
         private IRavenInstanceFactory _ravenInstanceFactory;
         private Assembly _indexAssembly;
 
-        private IndexBuilder _indexBuilder;
-
         #region Setup / Teardown
 
         [TestFixtureSetUp]

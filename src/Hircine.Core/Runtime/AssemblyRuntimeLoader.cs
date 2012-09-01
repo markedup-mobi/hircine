@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using Raven.Client.Indexes;
 
 namespace Hircine.Core.Runtime
 {
@@ -40,6 +44,27 @@ namespace Hircine.Core.Runtime
         {
             var targetAssembly = Assembly.LoadFrom(assemblyPath);
             return targetAssembly;
+        }
+
+        /// <summary>
+        /// Checks a loaded assembly for any defined RavenDB indexes
+        /// </summary>
+        /// <param name="targetAssembly">The assembly containing RavenDb indexes</param>
+        /// <returns>true if indexes are detected in the assembly, false otherwise</returns>
+        public static bool HasRavenDbIndexes(Assembly targetAssembly)
+        {
+            return GetRavenDbIndexes(targetAssembly).Count > 0;
+        }
+
+        /// <summary>
+        /// Lists the types of all defined RavenDB indexes from the assembly
+        /// </summary>
+        /// <param name="targetAssembly">The assembly containing RavenDb indexes</param>
+        /// <returns>A list of types derived from AbstractIndexCreationTask (base class for defining RavenDb indexes)</returns>
+        public static IList<Type> GetRavenDbIndexes(Assembly targetAssembly)
+        {
+            return targetAssembly.GetTypes()
+                .Where(x => typeof (AbstractIndexCreationTask).IsAssignableFrom(x) && !x.IsAbstract).ToList();
         }
     }
 }

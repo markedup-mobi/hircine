@@ -37,7 +37,7 @@ namespace Hircine.Core.Indexes
                                       var indexBuildResult = new IndexBuildResult()
                                                                  {IndexName = indexInstance.IndexName};
 
-                                      if (result.IsCompleted)
+                                      if (result.IsCompleted && result.Exception == null)
                                       {
                                           indexBuildResult.Result = BuildResult.Success;
                                       }
@@ -48,6 +48,7 @@ namespace Hircine.Core.Indexes
                                       else
                                       {
                                           indexBuildResult.Result = BuildResult.Failed;
+                                          indexBuildResult.BuildException = result.Exception != null ? result.Exception.Flatten() : null;
                                       }
 
                                       if (progressCallBack != null)

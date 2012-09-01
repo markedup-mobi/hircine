@@ -33,6 +33,7 @@ namespace Hircine.Core.Indexes
     {
         public string IndexName { get; set; }
         public BuildResult Result { get; set; }
+        public Exception BuildException { get; set; }
     }
 
     public enum BuildResult

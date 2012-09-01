@@ -16,6 +16,8 @@ namespace Hircine.Core.Tests.Indexes
         private IRavenInstanceFactory _ravenInstanceFactory;
         private Assembly _indexAssembly;
 
+        private IndexBuilder _indexBuilder;
+
         #region Setup / Teardown
 
         [TestFixtureSetUp]
@@ -119,7 +121,8 @@ namespace Hircine.Core.Tests.Indexes
                                         {
                                             Tag = g.Key.Tag,
                                             Day = g.Key.Day,
-                                            Total = g.Sum(x => x.Total)
+                                            Total = g.Sum(x => x.Total),
+                                            DrunkGoats = "LIE" //Extraneous field
                                         };
             }
         }
@@ -140,6 +143,8 @@ namespace Hircine.Core.Tests.Indexes
             Assert.IsTrue(numberOfTargetIndexes > 0, "Pre-condition failed: must have at least 1 index in the defined assembly");
 
             var embeddedDb = _ravenInstanceFactory.GetEmbeddedInstance(runInMemory: true);
+            embeddedDb.Initialize();
+
             var indexBuilder = new IndexBuilder(embeddedDb, _indexAssembly);
             try
             {
@@ -150,7 +155,36 @@ namespace Hircine.Core.Tests.Indexes
                 Assert.IsTrue(indexBuildResults.Cancelled == 0, "Should not have had any index building jobs cancelled");
                 Assert.IsTrue(indexBuildResults.Failed == 0, "Should not have had any index building jobs fail");
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                indexBuilder.Dispose();
+            }
+        }
+
+        [Test(Description = "We should be able to receive a failure notification back from RavenDb when we try to create an index that is invalid")]
+        public void Should_Report_IndexCreationFailure_When_Building_Invalid_Index()
+        {
+            var invalidMultiMapIndex = new InvalidMultiMapReduceIndex();
+
+            var embeddedDb = _ravenInstanceFactory.GetEmbeddedInstance(runInMemory: true);
+            embeddedDb.Initialize();
+
+            var indexBuilder = new IndexBuilder(embeddedDb, _indexAssembly);
+
+            try
+            {
+
+                var indexBuildResult = indexBuilder.BuildIndex(invalidMultiMapIndex);
+
+                Assert.IsNotNull(indexBuildResult);
+                Assert.AreEqual(invalidMultiMapIndex.IndexName, indexBuildResult.IndexName);
+                Assert.AreEqual(BuildResult.Failed, indexBuildResult.Result);
+            }
+            catch (InvalidOperationException ex)
             {
                 Assert.Fail(ex.Message);
             }

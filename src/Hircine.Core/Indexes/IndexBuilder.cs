@@ -23,6 +23,45 @@ namespace Hircine.Core.Indexes
             _indexAssembly = indexAssembly;
         }
 
+        public Task<IndexBuildResult> BuildIndexAsync(AbstractIndexCreationTask indexInstance, Action<IndexBuildResult> progressCallBack)
+        {
+            return Task.Factory.StartNew(() => indexInstance.Execute(_documentStore))
+                .ContinueWith(result =>
+                                  {
+                                      var indexBuildResult = new IndexBuildResult()
+                                                                 {IndexName = indexInstance.IndexName};
+
+                                      if (result.IsCompleted)
+                                      {
+                                          indexBuildResult.Result = BuildResult.Success;
+                                      }
+                                      else if (result.IsCanceled)
+                                      {
+                                          indexBuildResult.Result = BuildResult.Cancelled;
+                                      }
+                                      else
+                                      {
+                                          indexBuildResult.Result = BuildResult.Failed;
+                                      }
+
+                                      if (progressCallBack != null)
+                                      {
+                                          progressCallBack.Invoke(indexBuildResult);
+                                      }
+
+                                      return indexBuildResult;
+                                  });
+        }
+
+        public IndexBuildResult BuildIndex(AbstractIndexCreationTask index)
+        {
+            var buildIndexTask = BuildIndexAsync(index, null);
+
+            buildIndexTask.Wait();
+
+            return buildIndexTask.Result;
+        }
+
         public IndexBuildReport Run(Action<IndexBuildResult> progressCallBack)
         {
             var task = RunAsync(progressCallBack);
@@ -41,31 +80,7 @@ namespace Hircine.Core.Indexes
             foreach (var index in indexes)
             {
                 var indexInstance = (AbstractIndexCreationTask)Activator.CreateInstance(index);
-                tasks.Add(Task.Factory.StartNew(() => indexInstance.Execute(_documentStore))
-                                          .ContinueWith(result =>
-                                          {
-                                              var indexBuildResult = new IndexBuildResult() { IndexName = indexInstance.IndexName };
-
-                                              if (result.IsCompleted)
-                                              {
-                                                  indexBuildResult.Result = BuildResult.Success;
-                                              }
-                                              else if (result.IsCanceled)
-                                              {
-                                                  indexBuildResult.Result = BuildResult.Cancelled;
-                                              }
-                                              else
-                                              {
-                                                  indexBuildResult.Result = BuildResult.Failed;
-                                              }
-
-                                              if (progressCallBack != null)
-                                              {
-                                                  progressCallBack.Invoke(indexBuildResult);
-                                              }
-
-                                              return indexBuildResult;
-                                          }));
+                tasks.Add(BuildIndexAsync(indexInstance, progressCallBack));
             }
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), cont =>

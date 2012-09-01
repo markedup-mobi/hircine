@@ -30,8 +30,8 @@ namespace Hircine.Core.Tests.Connectivity
             {
                 //Attempt to connect to our databases
                 var connectionReport = indexManager.CanConnectToDbs();
-                Assert.AreEqual(1, connectionReport.ConnectivityResults.Count);
-                Assert.AreEqual(connectionReport.ConnectivityResults.Count, connectionReport.SuccessfulConnections);
+                Assert.AreEqual(1, connectionReport.JobResults.Count);
+                Assert.AreEqual(connectionReport.JobResults.Count, connectionReport.Successes);
             }catch(InvalidOperationException ex)
             {
                 Assert.Fail(ex.Message);
@@ -61,9 +61,9 @@ namespace Hircine.Core.Tests.Connectivity
             {
                 //Attempt to connect to our databases
                 var connectionReport = indexManager.CanConnectToDbs();
-                Assert.AreEqual(1, connectionReport.ConnectivityResults.Count);
-                Assert.AreEqual(0, connectionReport.SuccessfulConnections);
-                Assert.AreEqual(1, connectionReport.FailedConnections);
+                Assert.AreEqual(1, connectionReport.JobResults.Count);
+                Assert.AreEqual(0, connectionReport.Successes);
+                Assert.AreEqual(1, connectionReport.Failures);
             }
             catch (InvalidOperationException ex)
             {

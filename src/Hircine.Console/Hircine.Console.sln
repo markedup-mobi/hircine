@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Console", "Hircine.Console.csproj", "{56C66EEE-5956-40E1-8D45-924764A0114B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Core", "..\Hircine.Core\Hircine.Core.csproj", "{6645B93A-D5DB-40E0-A3A4-7858C6B49327}"
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4B940
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.TestIndexes", "..\Hircine.TestIndexes\Hircine.TestIndexes.csproj", "{252EF250-9E7A-450D-82EB-C128ED36BB02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +56,16 @@ Global
 		{90C17657-E465-4365-872B-A5DCB9D581FE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{90C17657-E465-4365-872B-A5DCB9D581FE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{90C17657-E465-4365-872B-A5DCB9D581FE}.Release|x86.ActiveCfg = Release|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{252EF250-9E7A-450D-82EB-C128ED36BB02}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

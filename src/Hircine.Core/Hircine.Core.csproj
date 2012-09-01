@@ -101,9 +101,11 @@
     <Compile Include="Connectivity\IRavenInstanceFactory.cs" />
     <Compile Include="Connectivity\RavenConnectionStringBuilder.cs" />
     <Compile Include="Connectivity\RavenConnectionStringParser.cs" />
-    <Compile Include="IndexBuildTask.cs" />
+    <Compile Include="Connectivity\ConnectivityReport.cs" />
+    <Compile Include="IndexBuildCommand.cs" />
     <Compile Include="Indexes\IndexBuilder.cs" />
     <Compile Include="Indexes\IndexBuildResult.cs" />
+    <Compile Include="IndexJobManager.cs" />
     <Compile Include="Runtime\AssemblyRuntimeLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

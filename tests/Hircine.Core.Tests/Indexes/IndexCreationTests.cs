@@ -9,5 +9,16 @@ namespace Hircine.Core.Tests.Indexes
     [TestFixture(Description = "Test fixture used for verifying that we can successfully create indexes using IndexBuilder")]
     public class IndexCreationTests
     {
+        #region Setup / Teardown
+
+
+
+        #endregion
+
+        #region Tests
+
+
+
+        #endregion
     }
 }

@@ -25,44 +25,11 @@ namespace Hircine.Core.Indexes
 
         public IndexBuildReport Run(Action<IndexBuildResult> progressCallBack)
         {
-            //Load our indexes
-            var indexes = AssemblyRuntimeLoader.GetRavenDbIndexes(_indexAssembly);
-            var tasks = new List<Task<IndexBuildResult>>();
-
-            foreach (var index in indexes)
-            {
-                var indexInstance = (AbstractIndexCreationTask)Activator.CreateInstance(index);
-                tasks.Add(Task.Factory.StartNew(() => indexInstance.Execute(_documentStore))
-                                          .ContinueWith(result =>
-                                                            {
-                                                                var indexBuildResult = new IndexBuildResult() { IndexName = indexInstance.IndexName };
-
-                                                                if (result.IsCompleted)
-                                                                {
-                                                                    indexBuildResult.Result = BuildResult.Success;
-                                                                }
-                                                                else if (result.IsCanceled)
-                                                                {
-                                                                    indexBuildResult.Result = BuildResult.Cancelled;
-                                                                }
-                                                                else
-                                                                {
-                                                                    indexBuildResult.Result = BuildResult.Failed;
-                                                                }
-
-                                                                if (progressCallBack != null)
-                                                                {
-                                                                    progressCallBack.Invoke(indexBuildResult);
-                                                                }
-
-                                                                return indexBuildResult;
-                                                            }));
-            }
+            var task = RunAsync(progressCallBack);
 
             //Wait out all of the tasks
-            Task.WaitAll(tasks.ToArray());
-
-            return new IndexBuildReport() {BuildResults = tasks.Select(x => x.Result).ToList()};
+            task.Wait();
+            return task.Result;
         }
 
         public Task<IndexBuildReport> RunAsync(Action<IndexBuildResult> progressCallBack)
@@ -74,45 +41,42 @@ namespace Hircine.Core.Indexes
             foreach (var index in indexes)
             {
                 var indexInstance = (AbstractIndexCreationTask)Activator.CreateInstance(index);
-
-                //Asynchronously work on executing the index
-                tasks.Add(indexInstance
-                    .ExecuteAsync(_documentStore.AsyncDatabaseCommands, _documentStore.Conventions)
-                    .ContinueWith(result =>
-                                      {
-                                          var indexBuildResult = new IndexBuildResult() { IndexName = indexInstance.IndexName };
-
-                                          if (result.IsCompleted)
+                tasks.Add(Task.Factory.StartNew(() => indexInstance.Execute(_documentStore))
+                                          .ContinueWith(result =>
                                           {
-                                              indexBuildResult.Result = BuildResult.Success;
-                                          }
-                                          else if (result.IsCanceled)
-                                          {
-                                              indexBuildResult.Result = BuildResult.Cancelled;
-                                          }
-                                          else
-                                          {
-                                              indexBuildResult.Result = BuildResult.Failed;
-                                          }
+                                              var indexBuildResult = new IndexBuildResult() { IndexName = indexInstance.IndexName };
 
-                                          if (progressCallBack != null)
-                                          {
-                                              progressCallBack.Invoke(indexBuildResult);
-                                          }
+                                              if (result.IsCompleted)
+                                              {
+                                                  indexBuildResult.Result = BuildResult.Success;
+                                              }
+                                              else if (result.IsCanceled)
+                                              {
+                                                  indexBuildResult.Result = BuildResult.Cancelled;
+                                              }
+                                              else
+                                              {
+                                                  indexBuildResult.Result = BuildResult.Failed;
+                                              }
 
-                                          return indexBuildResult;
-                                      }));
+                                              if (progressCallBack != null)
+                                              {
+                                                  progressCallBack.Invoke(indexBuildResult);
+                                              }
+
+                                              return indexBuildResult;
+                                          }));
             }
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), cont =>
-                                                                     {
-                                                                         var buildReport = new IndexBuildReport()
-                                                                                               {
-                                                                                                   BuildResults = tasks.Select(x => x.Result).ToList()
-                                                                                               };
+            {
+                var buildReport = new IndexBuildReport()
+                {
+                    BuildResults = tasks.Select(x => x.Result).ToList()
+                };
 
-                                                                         return buildReport;
-                                                                     });
+                return buildReport;
+            });
         }
 
         #region Implementation of IDisposable

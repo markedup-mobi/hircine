@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connectivity\ConnectionStringTests.cs" />
+    <Compile Include="Connectivity\IndexJobManagerConnectivityTests.cs" />
     <Compile Include="Indexes\IndexCreationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\AssemblyLoaderTests.cs" />

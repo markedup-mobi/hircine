@@ -12,7 +12,7 @@ namespace Hircine.Core
     /// <summary>
     /// Manager class which accepts an IndexBuildCommand from a client and executes it
     /// </summary>
-    public class IndexJobManager
+    public class IndexJobManager : IDisposable
     {
         private readonly IRavenInstanceFactory _ravenInstanceFactory;
 
@@ -94,6 +94,25 @@ namespace Hircine.Core
                 //Add the result of this particular connection attempt to the report
                 connectivityReport.ConnectivityResults.Add(connectivityResult);
             }
+
+            return connectivityReport;
         }
+
+        #region Implementation of IDisposable
+
+        public void Dispose()
+        {
+            //Dispose all of the RavenDb instances if they haven't been already
+            foreach(var db in RavenInstances)
+            {
+                //Check to see if the database has been disposed already
+                if(!db.Value.WasDisposed)
+                {
+                    db.Value.Dispose();
+                }
+            }
+        }
+
+        #endregion
     }
 }

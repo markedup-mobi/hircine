@@ -10,6 +10,12 @@ namespace Hircine.Core.Connectivity
         public IList<ConnectivityResult> ConnectivityResults { get; set; }
         public int SuccessfulConnections {get { return ConnectivityResults.Count(x => x.CanConnect); }}
         public int FailedConnections { get { return ConnectivityResults.Count(x => !x.CanConnect); } }
+
+        public ConnectivityReport()
+        {
+            ConnectivityResults = new List<ConnectivityResult>();
+        }
+
     }
 
     public class ConnectivityResult

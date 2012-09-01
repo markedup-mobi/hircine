@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using System.Reflection;
 using Hircine.Core.Runtime;
 using NUnit.Framework;
@@ -6,7 +7,7 @@ using NUnit.Framework;
 namespace Hircine.Core.Tests.Runtime
 {
     [TestFixture(Description = "Test for validating that our path-checking methods behave as expected")]
-    public class AssemblyLoaderPathTests
+    public class AssemblyLoaderTests
     {
         private string validTestAssemblyPath = "Hircine.TestIndexes.dll"; //will be in the same directory as the test assembly
         private string verifiedAbsoluteTestAssemblyPath = "";
@@ -38,6 +39,32 @@ namespace Hircine.Core.Tests.Runtime
         {
             var fakeAssemblyPath = Path.Combine(Path.GetTempPath(), validTestAssemblyPath);
             Assert.IsFalse(AssemblyRuntimeLoader.CanFindAssembly(fakeAssemblyPath));
+        }
+
+        [Test(Description = "Should be able to load a valid assembly into memory at run-time")]
+        public void Should_Load_Valid_Assembly()
+        {
+            Assert.IsTrue(AssemblyRuntimeLoader.CanFindAssembly(validTestAssemblyPath));
+
+            var assembly = AssemblyRuntimeLoader.LoadAssembly(validTestAssemblyPath);
+
+            Assert.IsNotNull(assembly);
+            Assert.AreNotEqual(0, ((ICollection) assembly.GetTypes()).Count);
+        }
+
+        [Test(Description = "Should be able to find RavenDb indexes on an assembly that is defined with them")]
+        public void Should_Find_RavenDbIndexes_On_Assembly_with_Index_Definitions()
+        {
+            Assert.IsTrue(AssemblyRuntimeLoader.CanFindAssembly(validTestAssemblyPath));
+
+            var assembly = AssemblyRuntimeLoader.LoadAssembly(validTestAssemblyPath);
+
+            Assert.IsNotNull(assembly);
+
+            var indexTypes = AssemblyRuntimeLoader.GetRavenDbIndexes(assembly);
+            Assert.IsNotNull(indexTypes);
+            Assert.IsTrue(indexTypes.Count > 0);
+            Assert.IsTrue(AssemblyRuntimeLoader.HasRavenDbIndexes(assembly));
         }
 
         #endregion

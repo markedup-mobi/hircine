@@ -102,7 +102,7 @@
   <ItemGroup>
     <Compile Include="Connectivity\ConnectionStringTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runtime\AssemblyLoaderPathTests.cs" />
+    <Compile Include="Runtime\AssemblyLoaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -23,7 +23,49 @@ namespace Hircine.Core.Indexes
             _indexAssembly = indexAssembly;
         }
 
-        public Task<IndexBuildReport> Run(Action<IndexBuildResult> progressCallBack)
+        public IndexBuildReport Run(Action<IndexBuildResult> progressCallBack)
+        {
+            //Load our indexes
+            var indexes = AssemblyRuntimeLoader.GetRavenDbIndexes(_indexAssembly);
+            var tasks = new List<Task<IndexBuildResult>>();
+
+            foreach (var index in indexes)
+            {
+                var indexInstance = (AbstractIndexCreationTask)Activator.CreateInstance(index);
+                tasks.Add(Task.Factory.StartNew(() => indexInstance.Execute(_documentStore))
+                                          .ContinueWith(result =>
+                                                            {
+                                                                var indexBuildResult = new IndexBuildResult() { IndexName = indexInstance.IndexName };
+
+                                                                if (result.IsCompleted)
+                                                                {
+                                                                    indexBuildResult.Result = BuildResult.Success;
+                                                                }
+                                                                else if (result.IsCanceled)
+                                                                {
+                                                                    indexBuildResult.Result = BuildResult.Cancelled;
+                                                                }
+                                                                else
+                                                                {
+                                                                    indexBuildResult.Result = BuildResult.Failed;
+                                                                }
+
+                                                                if (progressCallBack != null)
+                                                                {
+                                                                    progressCallBack.Invoke(indexBuildResult);
+                                                                }
+
+                                                                return indexBuildResult;
+                                                            }));
+            }
+
+            //Wait out all of the tasks
+            Task.WaitAll(tasks.ToArray());
+
+            return new IndexBuildReport() {BuildResults = tasks.Select(x => x.Result).ToList()};
+        }
+
+        public Task<IndexBuildReport> RunAsync(Action<IndexBuildResult> progressCallBack)
         {
             //Load our indexes
             var indexes = AssemblyRuntimeLoader.GetRavenDbIndexes(_indexAssembly);
@@ -66,7 +108,7 @@ namespace Hircine.Core.Indexes
                                                                      {
                                                                          var buildReport = new IndexBuildReport()
                                                                                                {
-                                                                                                   BuildResults =  tasks.Select(x => x.Result).ToList()
+                                                                                                   BuildResults = tasks.Select(x => x.Result).ToList()
                                                                                                };
 
                                                                          return buildReport;

@@ -261,6 +261,29 @@ namespace Hircine.Core.Tests.Indexes
             }
         }
 
+        [Test(Description = "Should be able to produce a list of indexes gathered from all of the assemblies specified in the IndexBuilder constructor")]
+        public void Should_Find_Indexes_From_All_Assemblies()
+        {
+            //We know that our current assembly ALSO has indexes
+            var currentAssembly = Assembly.GetExecutingAssembly();
+
+            //Assert that the current assembly has at least one index definied in it
+            Assert.IsTrue(AssemblyRuntimeLoader.HasRavenDbIndexes(currentAssembly));
+            Assert.IsTrue(AssemblyRuntimeLoader.HasRavenDbIndexes(_indexAssembly));
+
+            var totalIndexes = AssemblyRuntimeLoader.GetRavenDbIndexes(currentAssembly).Count +
+                               AssemblyRuntimeLoader.GetRavenDbIndexes(_indexAssembly).Count;
+
+            Assert.IsTrue(totalIndexes > 1, "Should have at least 2 indexes defined between the two assemblies");
+
+            //Hand off the index DBs to the IndexBuilder
+            var indexBuilder = new IndexBuilder(null, new[] {currentAssembly, _indexAssembly});
+
+            //See how many indexes the assembly builder finds
+            var indexes = indexBuilder.GetIndexesFromLoadedAssemblies();
+            Assert.AreEqual(totalIndexes, indexes.Count);
+        }
+
         #endregion
     }
 }

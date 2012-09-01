@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Hircine.TestIndexes.Models;
 using Hircine.TestIndexes.Reducers;
 using Raven.Client.Indexes;

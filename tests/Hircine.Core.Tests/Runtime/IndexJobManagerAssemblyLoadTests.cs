@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 
 namespace Hircine.Core.Tests.Runtime
@@ -69,6 +67,34 @@ namespace Hircine.Core.Tests.Runtime
             }
         }
 
+        [Test(Description = "Should report an unsuccessful load job when we attempt to load an assembly that exists, but has no index definitions")]
+        public void Should_Report_Unsuccessful_Load_For_Assembly_with_No_Index_Definitions()
+        {
+            var commandObject = new IndexBuildCommand()
+            {
+                AssemblyPaths = new string[] { "System.Diagnostics" },
+                UseEmbedded = true
+            };
+
+            var indexManager = new IndexJobManager(commandObject);
+            try
+            {
+                var assemblyLoadReport = indexManager.CanLoadAssemblies();
+                Assert.AreEqual(commandObject.AssemblyPaths.Count(), assemblyLoadReport.JobResults.Count);
+                Assert.AreEqual(0, assemblyLoadReport.Successes);
+                Assert.AreEqual(commandObject.AssemblyPaths.Count(), assemblyLoadReport.Failures);
+                Assert.IsNotNull(assemblyLoadReport.JobResults.First().JobException);
+                Assert.IsInstanceOf<InvalidOperationException>(assemblyLoadReport.JobResults.First().JobException);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+            finally
+            {
+                indexManager.Dispose();
+            }
+        }
 
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Hircine.Core.Connectivity;
+using NUnit.Framework;
 
 namespace Hircine.Core.Tests.Connectivity
 {
@@ -17,9 +18,12 @@ namespace Hircine.Core.Tests.Connectivity
         public void Should_Accept_ConnectionString_with_Just_Url()
         {
             //valid connection string
-            var connectionString = "http://localhost:8080";
+            var connectionStringUrl = "http://localhost:8080";
+            var connectionString = string.Format("Url={0}", connectionStringUrl);
 
-            var parsedConnectionString = 
+            var parsedConnectionString = RavenConnectionStringParser.ParseNetworkedDbOptions(connectionString);
+
+            Assert.AreEqual(connectionStringUrl, parsedConnectionString.Url);
         }
 
         #endregion

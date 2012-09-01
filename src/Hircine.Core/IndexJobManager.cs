@@ -76,19 +76,18 @@ namespace Hircine.Core
                 try
                 {
                     //Attempt to open a session
-                    var session = db.Value.OpenSession();
+                    var databaseStatistics = db.Value.DatabaseCommands.GetStatistics();
 
                     //See if we can get the store identifier
-                    if(!string.IsNullOrEmpty(session.Advanced.StoreIdentifier))
+                    if(databaseStatistics != null)
                     {
                         connectivityResult.CanConnect = true;
                     }
-
-                    session.Dispose();
                 }catch(Exception ex)
                 {
                     //If there was an exception thrown here, it means there was probably something wrong with our database connection string
                     connectivityResult.CanConnect = false;
+                    connectivityResult.ConnectivityException = ex;
                 }
 
                 //Add the result of this particular connection attempt to the report

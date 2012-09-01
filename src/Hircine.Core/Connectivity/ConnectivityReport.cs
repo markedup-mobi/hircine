@@ -22,5 +22,6 @@ namespace Hircine.Core.Connectivity
     {
         public string ConnectionString { get; set; }
         public bool CanConnect { get; set; }
+        public Exception ConnectivityException { get; set; }
     }
 }

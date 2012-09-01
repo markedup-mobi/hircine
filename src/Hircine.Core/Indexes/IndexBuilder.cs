@@ -54,7 +54,7 @@ namespace Hircine.Core.Indexes
                 .ContinueWith(result =>
                                   {
                                       var indexBuildResult = new IndexBuildResult()
-                                                                 {IndexName = indexInstance.IndexName};
+                                                                 {IndexName = indexInstance.IndexName, ConnectionString = _documentStore.Identifier};
 
                                       if (result.IsCompleted && result.Exception == null)
                                       {
@@ -142,7 +142,7 @@ namespace Hircine.Core.Indexes
         /// </summary>
         public void Dispose()
         {
-            if (_documentStore != null)
+            if (_documentStore != null && !_documentStore.WasDisposed)
                 _documentStore.Dispose();
         }
 

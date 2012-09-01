@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Hircine.Core.Connectivity;
+using Hircine.Core.Indexes;
 using Hircine.Core.Runtime;
 using Raven.Client;
 using Raven.Client.Document;
@@ -155,6 +156,16 @@ namespace Hircine.Core
             }
 
             return connectivityReport;
+        }
+
+        /// <summary>
+        /// Synchronous method for reporting on the results of index build tasks across all assemblies and indexes
+        /// </summary>
+        /// <param name="progressCallback">An optional callback method that reports on the success of building an individual index</param>
+        /// <returns></returns>
+        public IList<IndexBuildReport> Build(Action<IndexBuildResult> progressCallback = null)
+        {
+            
         }
 
         #region Implementation of IDisposable

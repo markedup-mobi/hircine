@@ -52,6 +52,11 @@ namespace Hircine.Core.Indexes
     public class IndexBuildResult
     {
         /// <summary>
+        /// Name of the connection string for the current database
+        /// </summary>
+        public string ConnectionString { get; set; }
+
+        /// <summary>
         /// Name of the index being built (determined by RavenDB and the AbstractIndexCreationTask definition)
         /// </summary>
         public string IndexName { get; set; }

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Hircine.Core.Connectivity;
 using Hircine.Core.Indexes;
 using Hircine.Core.Runtime;
 using Raven.Client;
-using Raven.Client.Document;
 
 namespace Hircine.Core
 {

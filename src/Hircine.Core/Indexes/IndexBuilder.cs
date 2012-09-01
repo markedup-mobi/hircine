@@ -15,12 +15,31 @@ namespace Hircine.Core.Indexes
     public class IndexBuilder : IDisposable
     {
         private readonly IDocumentStore _documentStore;
-        private readonly Assembly _indexAssembly;
 
-        public IndexBuilder(IDocumentStore store, Assembly indexAssembly)
+        private readonly Assembly[] _assemblies;
+
+        public IndexBuilder(IDocumentStore store, Assembly[] indexAssemblies)
         {
             _documentStore = store;
-            _indexAssembly = indexAssembly;
+            _assemblies = indexAssemblies;
+        }
+
+        public IndexBuilder(IDocumentStore store, Assembly indexAssembly) : this(store, new[]{indexAssembly})
+        {
+        }
+
+        /// <summary>
+        /// Builds the full set of indexes we're going to build from all of the designated assemblies
+        /// </summary>
+        /// <returns>A list of Types derived from AbstractIndexCreationTask</returns>
+        public IList<Type> GetIndexesFromLoadedAssemblies()
+        {
+            var indexes = new List<Type>();
+            foreach(var assembly in _assemblies)
+            {
+                indexes = indexes.Concat(AssemblyRuntimeLoader.GetRavenDbIndexes(assembly)).ToList();
+            }
+            return indexes;
         }
 
         /// <summary>
@@ -96,7 +115,7 @@ namespace Hircine.Core.Indexes
         public Task<IndexBuildReport> RunAsync(Action<IndexBuildResult> progressCallBack)
         {
             //Load our indexes
-            var indexes = AssemblyRuntimeLoader.GetRavenDbIndexes(_indexAssembly);
+            var indexes = GetIndexesFromLoadedAssemblies();
             var tasks = new List<Task<IndexBuildResult>>();
 
             foreach (var index in indexes)

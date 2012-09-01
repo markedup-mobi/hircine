@@ -102,6 +102,7 @@
     <Compile Include="Connectivity\RavenConnectionStringBuilder.cs" />
     <Compile Include="Connectivity\RavenConnectionStringParser.cs" />
     <Compile Include="Indexes\IndexBuilder.cs" />
+    <Compile Include="Indexes\IndexBuildResult.cs" />
     <Compile Include="Runtime\AssemblyRuntimeLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

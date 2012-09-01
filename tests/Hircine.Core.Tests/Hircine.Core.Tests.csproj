@@ -116,7 +116,7 @@
       <Project>{6645B93A-D5DB-40E0-A3A4-7858C6B49327}</Project>
       <Name>Hircine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Hircine.TestIndexes\Hircine.TestIndexes.csproj">
+    <ProjectReference Include="..\Hircine.TestIndexes\Hircine.TestIndexes.csproj">
       <Project>{252ef250-9e7a-450d-82eb-c128ed36bb02}</Project>
       <Name>Hircine.TestIndexes</Name>
     </ProjectReference>

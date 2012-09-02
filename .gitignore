@@ -7,6 +7,7 @@ obj
 
 # mstest test results
 TestResults
+TestResult.xml
 
 #NuGet
 packages/

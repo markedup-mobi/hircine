@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Repositories\hircine\tests\Hircine.Core.Tests\bin\release\Hircine.Core.Tests.dll" total="24" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2012-09-01" time="22:53:38">
+  <environment nunit-version="2.6.1.12217" clr-version="2.0.50727.6387" os-version="Microsoft Windows NT 6.2.9200.0" platform="Win32NT" cwd="C:\Repositories\hircine" machine-name="AARONWORK-WIN8" user="Aaron" user-domain="AARONWORK-WIN8" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Test Project" name="" executed="True" result="Success" success="True" time="24.176" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Repositories\hircine\tests\Hircine.Core.Tests\bin\release\Hircine.Core.Tests.dll" executed="True" result="Success" success="True" time="23.458" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="Hircine" executed="True" result="Success" success="True" time="23.434" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Core" executed="True" result="Success" success="True" time="23.433" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="23.433" asserts="0">
+                    <results>
+                      <test-suite type="Namespace" name="Connectivity" executed="True" result="Success" success="True" time="21.281" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="ConnectionStringTests" description="Test fixture which asserts that our RavenDB connection string parser behaves as expected for the defaults we show on the command-line" executed="True" result="Success" success="True" time="0.574" asserts="0">
+                            <results>
+                              <test-case name="Hircine.Core.Tests.Connectivity.ConnectionStringTests.Should_Accept_ConnectionString_with_Just_Url" description="Should accept a connection string that has just a Url in it" executed="True" result="Success" success="True" time="0.514" asserts="1" />
+                              <test-case name="Hircine.Core.Tests.Connectivity.ConnectionStringTests.Should_Accept_ConnectionString_with_Url_and_ApiKey" description="Should accept a connection string that has both a Url and an API key specified - typically used for RavenHQ" executed="True" result="Success" success="True" time="0.012" asserts="2" />
+                              <test-case name="Hircine.Core.Tests.Connectivity.ConnectionStringTests.Should_Accept_ConnectionString_with_Url_and_DefaultDatabase" description="Should accept a connection string that has both a url and a default database specified" executed="True" result="Success" success="True" time="0.001" asserts="2" />
+                              <test-case name="Hircine.Core.Tests.Connectivity.ConnectionStringTests.Should_Accept_ConnectionString_with_Url_and_UserNamePassword" description="Should be able to parse a connection string that has both a username and password in it in addition to the Url" executed="True" result="Success" success="True" time="0.009" asserts="3" />
+                              <test-case name="Hircine.Core.Tests.Connectivity.ConnectionStringTests.Should_Accept_ConnectionString_with_Url_UserNamePassword_and_DefaultDb" description="Should accept a connection sting that has a Url, a username / password, and a default database specified" executed="True" result="Success" success="True" time="0.002" asserts="4" />
+                            </results>
+                          </test-suite>
+                          <test-suite type="TestFixture" name="IndexJobManagerConnectivityTests" description="Test fixture for asserting that our " executed="True" result="Success" success="True" time="20.695" asserts="0">
+                            <results>
+                              <test-case name="Hircine.Core.Tests.Connectivity.IndexJobManagerConnectivityTests.Should_Report_Successful_Connection_to_Embedded_Database" description="Should be able to establish and accurately report a connection to an embedded database" executed="True" result="Success" success="True" time="11.491" asserts="2" />
+                              <test-case name="Hircine.Core.Tests.Connectivity.IndexJobManagerConnectivityTests.Should_Report_Unsuccessful_Connection_to_Nonexistant_Database" description="Should report that the connection was unsuccessful to a database that does not exist" executed="True" result="Success" success="True" time="8.643" asserts="3" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="Indexes" executed="True" result="Success" success="True" time="2.103" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="IndexCreationTests" description="Test fixture used for verifying that we can successfully create indexes using IndexBuilder" executed="True" result="Success" success="True" time="2.102" asserts="0">
+                            <results>
+                              <test-case name="Hircine.Core.Tests.Indexes.IndexCreationTests.Should_Find_Indexes_From_All_Assemblies" description="Should be able to produce a list of indexes gathered from all of the assemblies specified in the IndexBuilder constructor" executed="True" result="Success" success="True" time="0.006" asserts="4" />
+                              <test-case name="Hircine.Core.Tests.Indexes.IndexCreationTests.Should_Report_IndexCreationFailure_When_Building_Invalid_Index" description="We should be able to receive a failure notification back from RavenDb when we try to create an index that is invalid" executed="True" result="Success" success="True" time="0.633" asserts="3" />
+                              <test-case name="Hircine.Core.Tests.Indexes.IndexCreationTests.Should_Report_IndexCreationSuccess_When_Building_Valid_Index" description="We should recieve a success notification when we are able to successfully build an index against RavenDB" executed="True" result="Success" success="True" time="0.757" asserts="3" />
+                              <test-case name="Hircine.Core.Tests.Indexes.IndexCreationTests.Should_Report_Progress_on_Batch_Jobs" description="Should be able to report progress on batch jobs via the callback we pass in without any issues" executed="True" result="Success" success="True" time="0.599" asserts="8" />
+                              <test-case name="Hircine.Core.Tests.Indexes.IndexCreationTests.Should_Synchronously_Create_Indexes_Against_Embedded_Database" description="Should be able to build our valid RavenDB indexes against an in-memory test database" executed="True" result="Success" success="True" time="0.048" asserts="6" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                      <test-suite type="Namespace" name="Runtime" executed="True" result="Success" success="True" time="0.037" asserts="0">
+                        <results>
+                          <test-suite type="TestFixture" name="AssemblyLoaderTests" description="Test for validating that our path-checking methods behave as expected" executed="True" result="Success" success="True" time="0.012" asserts="0">
+                            <results>
+                              <test-case name="Hircine.Core.Tests.Runtime.AssemblyLoaderTests.Should_Extend_Relative_Path_to_Absolute_Path" description="Our GetFullAssemblyPath method should be able to translate a relative path into an absolute one" executed="True" result="Success" success="True" time="0.002" asserts="3" />
+                              <test-case name="Hircine.Core.Tests.Runtime.AssemblyLoaderTests.Should_Find_RavenDbIndexes_On_Assembly_with_Index_Definitions" description="Should be able to find RavenDb indexes on an assembly that is defined with them" executed="True" result="Success" success="True" time="0.002" asserts="5" />
+                              <test-case name="Hircine.Core.Tests.Runtime.AssemblyLoaderTests.Should_Load_Valid_Assembly" description="Should be able to load a valid assembly into memory at run-time" executed="True" result="Success" success="True" time="0.003" asserts="3" />
+                              <test-case name="Hircine.Core.Tests.Runtime.AssemblyLoaderTests.Should_Not_Find_Assembly_at_Bad_Path" description="Should get a false on our can-find assembly method for an assembly that does not exist" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                            </results>
+                          </test-suite>
+                          <test-suite type="TestFixture" name="IndexJobManagerAssemblyLoadTests" description="Test fixture for asserting that our IndexJobManager can properly load and verify valid assemblies containing RavenDB index definitions" executed="True" result="Success" success="True" time="0.021" asserts="0">
+                            <results>
+                              <test-case name="Hircine.Core.Tests.Runtime.IndexJobManagerAssemblyLoadTests.Should_Report_Successful_Load_For_Valid_Assembly_Containing_RavenDB_Index_Definitions" description="Should report a successful load event for a valid assembly that actually has RavenDB index definitions" executed="True" result="Success" success="True" time="0.005" asserts="2" />
+                              <test-case name="Hircine.Core.Tests.Runtime.IndexJobManagerAssemblyLoadTests.Should_Report_Unsuccessful_Load_For_Assembly_with_No_Index_Definitions" description="Should report an unsuccessful load job when we attempt to load an assembly that exists, but has no index definitions" executed="True" result="Success" success="True" time="0.005" asserts="5" />
+                              <test-case name="Hircine.Core.Tests.Runtime.IndexJobManagerAssemblyLoadTests.Should_Report_Unsuccessful_Load_For_NonExistant_Assembly" description="Should report an unsuccessful load job when we attempt to load an assembly that does not exist" executed="True" result="Success" success="True" time="0.005" asserts="5" />
+                            </results>
+                          </test-suite>
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="Assembly" name="C:\Repositories\hircine\tests\Hircine.Console.Tests\bin\release\Hircine.Console.Tests.dll" executed="True" result="Success" success="True" time="0.518" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="Hircine" executed="True" result="Success" success="True" time="0.495" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Console" executed="True" result="Success" success="True" time="0.494" asserts="0">
+                <results>
+                  <test-suite type="Namespace" name="Tests" executed="True" result="Success" success="True" time="0.494" asserts="0">
+                    <results>
+                      <test-suite type="TestFixture" name="CommandLineParseTests" description="Test fixture for ensuring that our" executed="True" result="Success" success="True" time="0.490" asserts="0">
+                        <results>
+                          <test-case name="Hircine.Console.Tests.CommandLineParseTests.Should_Parse_Connection_String_and_Assembly" description="Should be able to handle a commandline that contains a single connection string and an assembly" executed="True" result="Success" success="True" time="0.455" asserts="6" />
+                          <test-case name="Hircine.Console.Tests.CommandLineParseTests.Should_Parse_Connection_String_and_Assembly_With_SequentialFlags" description="Should be able to handle a commandline that contains a single connection string, an assembly, and some build flags" executed="True" result="Success" success="True" time="0.003" asserts="6" />
+                          <test-case name="Hircine.Console.Tests.CommandLineParseTests.Should_Parse_Multiple_Connection_Strings_and_Assemblies" description="Should be able to handle a commandline that contains multiple connection strings and assemblies" executed="True" result="Success" success="True" time="0.002" asserts="6" />
+                          <test-case name="Hircine.Console.Tests.CommandLineParseTests.Should_Parse_Successful_Options_for_Just_Assembly_and_EmbeddedDb" description="A simple commandline call with just an embed flag and a valid assembly name" executed="True" result="Success" success="True" time="0.001" asserts="6" />
+                          <test-case name="Hircine.Console.Tests.CommandLineParseTests.Should_Parse_Successful_Options_for_Just_Show_Help" description="A simple commandline call with just the help flag set should passs" executed="True" result="Success" success="True" time="0.002" asserts="6" />
+                        </results>
+                      </test-suite>
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

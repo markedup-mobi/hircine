@@ -41,7 +41,7 @@ assemblyinfo :assemblyinfo => :bumpVersion do |asm|
 	asm.version = env_buildversion
 	asm.file_version = env_buildversion
 
-	#asm.title = "hircine.exe"
+	asm.title = "hircine.exe"
 	asm.description = "Stand-alone RavenDB index builder, used in CI systems and automated deployments"
 	asm.company_name = "MarkedUp LLC"
 	asm.product_name = "Hircine"

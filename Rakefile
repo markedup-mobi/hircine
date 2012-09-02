@@ -5,66 +5,34 @@ Bundler.setup
 require 'albacore'
 require 'version_bumper'
 
+#-----------------------
+# Local dependencies
+#-----------------------
+require 'buildscripts/projects'
+require 'buildscripts/paths'
+
+#-----------------------
+# Environment variables
+#-----------------------
+@env_buildconfigname = "Release"
+
 def env_buildversion
 	bumper_version.to_s
-end
-
-def core_assembly_path(assemblyFile)
-	"src/Hircine.Core/bin/release/%{fileName}" % {:fileName => assemblyFile}
-end
-
-def app_assembly_path(assemblyFile)
-	"src/Hircine.Console/bin/release/%{fileName}" % {:fileName => assemblyFile}
-end
-
-#safe function for creating output directories
-def create_dir(dirName)
-	if !File.directory?(dirName)
-		FileUtils.mkdir(dirName) #creates the /build directory
-	end
-end
-
-def ilmerge_assemblies
-	a = [
-		#Load Hircine assemblies
-		app_assembly_path('Hircine.Console.exe'), 
-		app_assembly_path('Hircine.Core.dll'),
-
-		#Load RavenDB client assemblies
-		app_assembly_path('Raven.Abstractions.dll'),  
-		app_assembly_path('Raven.Client.Lightweight.dll'),
-		app_assembly_path('NLog.dll'),
-		app_assembly_path('Newtonsoft.Json.dll'),
-
-		#Load RavenDB embedded server assemblies
-		app_assembly_path('Raven.Client.Embedded.dll'),
-		app_assembly_path('Raven.Database.dll'), 
-		app_assembly_path('Raven.Munin.dll'), 
-		app_assembly_path('Raven.Storage.Esent.dll'), 
-		app_assembly_path('Raven.Storage.Managed.dll'), 
-		app_assembly_path('Esent.Interop.dll'),
-		app_assembly_path('BouncyCastle.Crypto.dll'),
-		app_assembly_path('Lucene.Net.dll'),
-		app_assembly_path('Lucene.Net.Contrib.Spatial.dll'),
-		app_assembly_path('Lucene.Net.Contrib.SpellChecker.dll'),
-		app_assembly_path('ICSharpCode.NRefactory.dll'),
-		app_assembly_path('Spatial4n.Core.dll')
-	]
 end
 
 desc "Build"
 msbuild :build => :assemblyinfo do |msb|
 	msb.properties :configuration => :Release
 	msb.targets :Clean, :Build #Does the equivalent of a "Rebuild Solution"
-	msb.solution = "Hircine.sln"
+	msb.solution = Files[:solution]
 end
 
 desc "Test"
 nunit :test => :build do |nunit|
-	nunit.command = "tools/nunit/nunit-console.exe"
+	nunit.command = Commands[:nunit]
 	nunit.options '/framework v4.0.30319'
 
-	nunit.assemblies "tests/Hircine.Core.Tests/bin/release/Hircine.Core.Tests.dll", "tests/Hircine.Console.Tests/bin/release/Hircine.Console.Tests.dll"
+	nunit.assemblies "#{Folders[:hircine_tests]}/bin/#{@env_buildconfigname}/#{Files[:hircine][:test]}", "#{Folders[:hircine_core_tests]}/bin/#{@env_buildconfigname}/#{Files[:hircine_core][:test]}"
 end
 
 #Task for bumping the version number
@@ -76,7 +44,7 @@ end
 
 desc "Updates the assembly information for Hircine"
 assemblyinfo :assemblyinfo => :bumpVersion do |asm|
-	assemblyInfoPath = "src/SharedAssemblyInfo.cs"
+	assemblyInfoPath = File.join(Folders[:src], Files[:assembly_info])
 
 	asm.input_file = assemblyInfoPath
 	asm.output_file = assemblyInfoPath
@@ -85,6 +53,7 @@ assemblyinfo :assemblyinfo => :bumpVersion do |asm|
 	asm.file_version = env_buildversion
 end
 
+=begin
 desc "Creates all of the output folders we need for ILMerge / NuGet"
 task :createOutputFolders do
 	create_dir('build')
@@ -164,4 +133,4 @@ end
 
 task :pack => [:test, :core_output, :app_output, :core_pack, :app_pack] do
 	puts "Packing NuGet packages..."
-end
+end=end

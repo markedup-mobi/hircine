@@ -16,28 +16,42 @@ Folders={
 
 	:nuget_bin => File.join("tools", "nuget"),
 	:nuget_build => File.join("build", "nuget"),
-	:hircine_nuspec => File.join("build", "nuspec", Projects[:hircine][:dir]),
-	:hircine_core_nuspec => File.join("build", "nuspec", Projects[:hircine_core][:dir]),
+
+	:hircine_nuspec => {
+			:root => File.join("build", "nuget", Projects[:hircine][:dir]),
+			:lib => File.join("build", "nuget", Projects[:hircine][:dir], "lib"),
+			:net40 => File.join("build", "nuget", Projects[:hircine][:dir], "lib", "net40"),
+	},
+
+	:hircine_core_nuspec => {
+			:root => File.join("build", "nuget", Projects[:hircine_core][:dir]),
+			:lib => File.join("build", "nuget", Projects[:hircine_core][:dir], "lib"),
+			:net40 => File.join("build", "nuget", Projects[:hircine_core][:dir], "lib", "net40"),
+	},
 
 	:ilmerge => File.join("tools", "ilmerge"),
 
-	:hircine_out => 'placeholder - specify build environment',
-	:hircine_core_out => 'placeholder - specify build environment'
+	:hircine_bin => 'placeholder - specify build environment',
+	:hircine_core_bin => 'placeholder - specify build environment',
 }
 
 Files = {
 	:solution => "Hircine.sln",
 	:version => "VERSION",
 	:assembly_info => "SharedAssemblyInfo.cs",
+	:license => "license.txt",
+	:readme => "README.md",
 
 	:hircine => {
 		:nuspec => "#{Projects[:hircine][:id]}.nuspec",
-		:test => "#{Projects[:hircine][:test_dir]}.dll"
+		:test => "#{Projects[:hircine][:test_dir]}.dll",
+		:bin => "#{Projects[:hircine][:dir]}.exe"
 	},
 
 	:hircine_core => {
 		:nuspec => "#{Projects[:hircine_core][:id]}.nuspec",
 		:test => "#{Projects[:hircine_core][:test_dir]}.dll"
+		:bin => "#{Projects[:hircine][:dir]}.dll"
 	},
 
 	:ilmerge_assemblies => [

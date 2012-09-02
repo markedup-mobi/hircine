@@ -20,7 +20,7 @@ namespace Hircine.Console.Tests
             var args = new[] {"-e", string.Format("-a {0}", TestHelper.ValidTestAssemblyPath)};
             bool showHelp;
 
-            var command = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp);
+            var command = IndexCommandParser.ParseIndexBuildCommand(args, out showHelp);
 
             Assert.IsFalse(showHelp);
             Assert.IsTrue(command.UseEmbedded);
@@ -36,7 +36,7 @@ namespace Hircine.Console.Tests
             var args = new[] { "-h" };
             bool showHelp;
 
-            var command = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp);
+            var command = IndexCommandParser.ParseIndexBuildCommand(args, out showHelp);
 
             Assert.IsTrue(showHelp);
             Assert.IsFalse(command.UseEmbedded);
@@ -52,7 +52,7 @@ namespace Hircine.Console.Tests
             var args = new[] { string.Format("-a {0}", TestHelper.ValidTestAssemblyPath), string.Format("-c {0}", RavenConnectionStringBuilder.BuildConnectionStringWithApiKey("http://localhost:8080", Guid.NewGuid().ToString())) };
             bool showHelp;
 
-            var command = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp);
+            var command = IndexCommandParser.ParseIndexBuildCommand(args, out showHelp);
 
             Assert.IsFalse(showHelp);
             Assert.IsFalse(command.UseEmbedded);
@@ -70,7 +70,7 @@ namespace Hircine.Console.Tests
             "-s", "-f"};
             bool showHelp;
 
-            var command = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp);
+            var command = IndexCommandParser.ParseIndexBuildCommand(args, out showHelp);
 
             Assert.IsFalse(showHelp);
             Assert.IsFalse(command.UseEmbedded);
@@ -91,7 +91,7 @@ namespace Hircine.Console.Tests
             };
             bool showHelp;
 
-            var command = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp);
+            var command = IndexCommandParser.ParseIndexBuildCommand(args, out showHelp);
 
             Assert.IsFalse(showHelp);
             Assert.IsFalse(command.UseEmbedded);

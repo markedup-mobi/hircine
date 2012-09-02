@@ -101,7 +101,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IndexCommandBuilder.cs" />
+    <Compile Include="IndexCommandParser.cs" />
     <Compile Include="Mono.Options\Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

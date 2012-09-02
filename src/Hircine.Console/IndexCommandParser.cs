@@ -10,7 +10,7 @@ namespace Hircine.Console
     /// <summary>
     /// Static helper class used for validating the command-line tool's interface
     /// </summary>
-    public static class IndexCommandBuilder
+    public static class IndexCommandParser
     {
         public static OptionSet Options { get; set; }
 

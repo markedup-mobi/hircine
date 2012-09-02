@@ -76,19 +76,13 @@ end
 
 desc "Updates the assembly information for Hircine"
 assemblyinfo :assemblyinfo => :bumpVersion do |asm|
-	assemblyInfoPath = "src/Hircine.Console/Properties/AssemblyInfo.cs"
+	assemblyInfoPath = "src/SharedAssemblyInfo.cs"
 
 	asm.input_file = assemblyInfoPath
 	asm.output_file = assemblyInfoPath
 
 	asm.version = env_buildversion
 	asm.file_version = env_buildversion
-
-	asm.title = "hircine.exe"
-	asm.description = "Stand-alone RavenDB index builder, used in CI systems and automated deployments"
-	asm.company_name = "MarkedUp LLC"
-	asm.product_name = "Hircine"
-	asm.copyright = "MarkedUp LLC (c) 2012"
 end
 
 desc "Creates all of the output folders we need for ILMerge / NuGet"

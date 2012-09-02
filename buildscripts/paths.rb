@@ -1,7 +1,7 @@
 #----------------------------------
 # Environment variables for Hircine
 #----------------------------------
-root_folder = File.expand_path("#{File.dirname(__FILE__)}")
+root_folder = File.expand_path("#{File.dirname(__FILE__)}/..")
 
 
 Folders={
@@ -26,21 +26,21 @@ Folders={
 }
 
 Files = {
-	:solution = "Hircine.sln",
-	:version = "VERSION",
-	:assembly_info = File.join(Folders[:src], "SharedAssemblyInfo.cs")
+	:solution => "Hircine.sln",
+	:version => "VERSION",
+	:assembly_info => "SharedAssemblyInfo.cs",
 
-	:hircine = {
-		:nuspec => File.join(Folders[:hircine_nuspec], "#{Projects[:hircine][:id]}.nuspec"),
-		:test => File.join(Folders[:hircine_tests], "#{Projects[:hircine][:test_dir]}.dll")
+	:hircine => {
+		:nuspec => "#{Projects[:hircine][:id]}.nuspec",
+		:test => "#{Projects[:hircine][:test_dir]}.dll"
 	},
 
-	:hircine_core = {
-		:nuspec => File.join(Folders[:hircine_core_nuspec], "#{Projects[:hircine_core][:id]}.nuspec"),
-		:test => File.join(Folders[:hircine_core_tests], "#{Projects[:hircine_core][:test_dir]}.dll")
-	}
+	:hircine_core => {
+		:nuspec => "#{Projects[:hircine_core][:id]}.nuspec",
+		:test => "#{Projects[:hircine_core][:test_dir]}.dll"
+	},
 
-	:ilmerge_assemblies = [
+	:ilmerge_assemblies => [
 		#Hircine binaries
 		'Hircine.Console.exe', 
 		'Hircine.Core.dll',
@@ -52,7 +52,7 @@ Files = {
 		'Newtonsoft.Json.dll',
 
 		#Load RavenDB embedded server assemblies
-		'Raven.Client.Embedded.dll'),
+		'Raven.Client.Embedded.dll',
 		'Raven.Database.dll', 
 		'Raven.Munin.dll', 
 		'Raven.Storage.Esent.dll', 

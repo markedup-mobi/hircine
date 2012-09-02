@@ -80,9 +80,16 @@ assemblyinfo :assemblyinfo => :bumpVersion do |asm|
 	asm.copyright = "MarkedUp LLC (c) 2012"
 end
 
-desc "Merges all of the assemblies needed to run Hircine"
-ILMerge :merge do |cfg|
-	cfg.command = 'tools/ilmerge/ILMerge.exe'
-	cfg.assemblies = ilmerge_assemblies 
-	cfg.output = 'build/hircine.exe'
+desc "Creates all of the output folders we need for ILMerge / NuGet"
+task :createOutputFolders do
+	if !File.directory?('build')
+		FileUtils.mkdir('build') #creates the /build directory
+	end
+end
+
+desc "merges all of the assemblies needed to run hircine"
+exec :merge => :createOutputFolders do |cmd|
+	cmd.command = 'tools/ilmerge/ilmerge.exe'
+	cmd.parameters = "/out:build/hircine.exe %{assemblies}" % { assemblies: ilmerge_assemblies.map{|s| "#{s}"}.join(' ')}
+	puts "Merging"
 end

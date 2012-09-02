@@ -2,5 +2,15 @@
 bin
 obj
 
+#VS files
+*.suo
+
 # mstest test results
 TestResults
+
+#NuGet
+packages/
+
+# ReSharper
+_ReSharper*
+*.DotSettings*

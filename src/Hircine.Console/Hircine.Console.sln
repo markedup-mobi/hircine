@@ -9,9 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Core.Tests", "..\..
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4B9401D-2F30-4F00-B66B-BA7401BA35CD}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
+		..\..\tools\nuget\NuGet.Config = .nuget\NuGet.Config
+		..\..\tools\nuget\NuGet.exe = .nuget\NuGet.exe
+		..\..\tools\nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.TestIndexes", "..\..\tests\Hircine.TestIndexes\Hircine.TestIndexes.csproj", "{252EF250-9E7A-450D-82EB-C128ED36BB02}"

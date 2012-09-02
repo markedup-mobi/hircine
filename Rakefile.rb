@@ -7,6 +7,7 @@ require 'version_bumper'
 #-----------------------
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/project_data'
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/paths'
+require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/albacore_mods.rb'
 
 #-----------------------
 # Environment variables
@@ -68,14 +69,14 @@ task :create_output_folders => :set_output_folders do
 	create_dir(Folders[:hircine_core_nuspec][:net40])
 end
 
-output :core_static_output => [:create_output_folders] do |out|
+output :core_static_output do |out|
 	out.from '.'
 	out.to Folders[:hircine_core_nuspec][:root]
 	out.file Files[:readme]
 	out.file Files[:license]
 end
 
-output :app_static_output =>  do |out|
+output :app_static_output do |out|
 	out.from Folders[:root]
 	out.to Folders[:hircine_nuspec][:root]
 	out.file Files[:readme]
@@ -84,6 +85,7 @@ end
 
 output :core_net40_output => [:core_static_output] do |out|
 	out.from Folders[:hircine_core_bin]
+	create_dir(Folders[:hircine_core_nuspec][:lib])
 	out.to Folders[:hircine_core_nuspec][:net40]
 	out.file Files[:hircine_core][:bin]
 end
@@ -91,6 +93,7 @@ end
 
 output :app_net40_output => [:app_static_output] do |out|
 	out.from Folders[:hircine_bin]
+	create_dir(Folders[:hircine_nuspec][:lib])
 	out.to Folders[:hircine_nuspec][:net40]
 	out.file Files[:hircine][:bin], :as => 'hircine.exe'
 end
@@ -137,7 +140,7 @@ nugetpack :app_pack => [:test, :app_net40_output, :app_nuspec] do |nuget|
 	nuget.output = Folders[:nuget_build]
 end
 
-task :pack => [:core_pack, :app_pack] do
+task :pack => [:create_output_folders, :core_pack, :app_pack] do
 	puts "Packing NuGet packages..."
 end
 

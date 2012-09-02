@@ -38,96 +38,108 @@ namespace Hircine.Console
             System.Console.WriteLine(string.Format("Hircine Version {0}", Assembly.GetExecutingAssembly().FullName));
 
             //Create our job manager for actually building RavenDB indexes
-            var indexJobManager = new IndexJobManager(indexCommand);
-
-            System.Console.WriteLine("Validating assemblies...");
-
-            var assemblyResults = indexJobManager.CanLoadAssemblies();
-            if(assemblyResults.Successes == assemblyResults.JobResults.Count)
+            using (var indexJobManager = new IndexJobManager(indexCommand))
             {
-                WriteSuccess();
-                System.Console.WriteLine(string.Format("Loaded all ({0}) assemblies and was able to find indexes inside all of them.", assemblyResults.Successes));
-                WriteStandard();
-                System.Console.WriteLine();
-            } else
-            {
-                var errorJobs = assemblyResults.JobResults.Where(x => x.WasFound == false);
-                WriteWarning();
-                System.Console.WriteLine("Errors loading assemblies...");
-                foreach(var errorJob in errorJobs)
+
+                System.Console.WriteLine("Validating assemblies...");
+
+                var assemblyResults = indexJobManager.CanLoadAssemblies();
+                if (assemblyResults.Successes == assemblyResults.JobResults.Count)
                 {
-                    WriteError();
-                    System.Console.WriteLine("Error!");
+                    WriteSuccess();
+                    System.Console.WriteLine(
+                        string.Format("Loaded all ({0}) assemblies and was able to find indexes inside all of them.",
+                                      assemblyResults.Successes));
                     WriteStandard();
-                    System.Console.WriteLine("Unable to load assembly {0}", errorJob.ResourceName);
-                    System.Console.WriteLine("Error message: {0}", errorJob.JobException.Message);
                     System.Console.WriteLine();
                 }
-                return;
-            }
-
-            //Attempt to connect to our databases
-            System.Console.WriteLine("Validating RavenDB connections...");
-            var connectionResult = indexJobManager.CanConnectToDbs();
-            if(connectionResult.Successes == connectionResult.JobResults.Count)
-            {
-                WriteSuccess();
-                System.Console.WriteLine(string.Format("Was able to connect to all ({0}) RavenDB instances successfully.", connectionResult.Successes));
-                WriteStandard();
-                System.Console.WriteLine();
-            } else
-            {
-                var errorJobs = connectionResult.JobResults.Where(x => x.WasFound == false);
-                WriteWarning();
-                System.Console.WriteLine("Errors connecting to databases...");
-                foreach (var errorJob in errorJobs)
+                else
                 {
-                    WriteError();
-                    System.Console.WriteLine("Error!");
+                    var errorJobs = assemblyResults.JobResults.Where(x => x.WasFound == false);
+                    WriteWarning();
+                    System.Console.WriteLine("Errors loading assemblies...");
+                    foreach (var errorJob in errorJobs)
+                    {
+                        WriteError();
+                        System.Console.WriteLine("Error!");
+                        WriteStandard();
+                        System.Console.WriteLine("Unable to load assembly {0}", errorJob.ResourceName);
+                        System.Console.WriteLine("Error message: {0}", errorJob.JobException.Message);
+                        System.Console.WriteLine();
+                    }
+                    return;
+                }
+
+                //Attempt to connect to our databases
+                System.Console.WriteLine("Validating RavenDB connections...");
+                var connectionResult = indexJobManager.CanConnectToDbs();
+                if (connectionResult.Successes == connectionResult.JobResults.Count)
+                {
+                    WriteSuccess();
+                    System.Console.WriteLine(
+                        string.Format("Was able to connect to all ({0}) RavenDB instances successfully.",
+                                      connectionResult.Successes));
                     WriteStandard();
-                    System.Console.WriteLine("Unable to connect to RavenDB database {0}", errorJob.ResourceName);
-                    System.Console.WriteLine("Error message: {0}", errorJob.JobException.Message);
                     System.Console.WriteLine();
                 }
-                return;
+                else
+                {
+                    var errorJobs = connectionResult.JobResults.Where(x => x.WasFound == false);
+                    WriteWarning();
+                    System.Console.WriteLine("Errors connecting to databases...");
+                    foreach (var errorJob in errorJobs)
+                    {
+                        WriteError();
+                        System.Console.WriteLine("Error!");
+                        WriteStandard();
+                        System.Console.WriteLine("Unable to connect to RavenDB database {0}", errorJob.ResourceName);
+                        System.Console.WriteLine("Error message: {0}", errorJob.JobException.Message);
+                        System.Console.WriteLine();
+                    }
+                    return;
+                }
+
+                //And with all of that out of the way, now it's time to actually run our job
+                System.Console.WriteLine("Starting index-building job...");
+                System.Console.WriteLine();
+
+                var results = indexJobManager.Build(result =>
+                                                        {
+                                                            if (result.Result == BuildResult.Success)
+                                                            {
+                                                                WriteSuccess();
+                                                                System.Console.WriteLine(
+                                                                    "Able to successfully build index {0} in server {1}",
+                                                                    result.IndexName, result.ConnectionString);
+                                                                System.Console.WriteLine();
+                                                            }
+                                                            else
+                                                            {
+                                                                WriteError();
+                                                                System.Console.WriteLine("Error!");
+                                                                System.Console.WriteLine(
+                                                                    "Unable to build index {0} in server {1}",
+                                                                    result.IndexName, result.ConnectionString);
+                                                                System.Console.WriteLine("Exception: {0}",
+                                                                                         result.BuildException);
+                                                                System.Console.WriteLine();
+                                                            }
+                                                        });
+
+                if (results.Sum(x => x.Completed) == results.Sum(x => x.BuildResults.Count))
+                {
+                    WriteSuccess();
+                    System.Console.WriteLine("Success");
+                    WriteStandard();
+                }
+                else
+                {
+                    WriteError();
+                    System.Console.WriteLine("Failure");
+                    WriteStandard();
+                }
+
             }
-
-            //And with all of that out of the way, now it's time to actually run our job
-            System.Console.WriteLine("Starting index-building job...");
-            System.Console.WriteLine();
-
-            var results = indexJobManager.Build(result =>
-                                      {
-                                          if(result.Result == BuildResult.Success)
-                                          {
-                                              WriteSuccess();
-                                              System.Console.WriteLine("Able to successfully build index {0} in server {1}", result.IndexName, result.ConnectionString);
-                                              System.Console.WriteLine();
-                                          }
-                                          else
-                                          {
-                                              WriteError();
-                                              System.Console.WriteLine("Error!");
-                                              System.Console.WriteLine("Unable to build index {0} in server {1}", result.IndexName, result.ConnectionString);
-                                              System.Console.WriteLine("Exception: {0}", result.BuildException);
-                                              System.Console.WriteLine();
-                                          }
-                                      });
-
-            if(results.Sum(x => x.Completed) == results.Sum(x => x.BuildResults.Count))
-            {
-                WriteSuccess();
-                System.Console.WriteLine("Success");
-                WriteStandard();
-            } else
-            {
-                WriteError();
-                System.Console.WriteLine("Failure");
-                WriteStandard();
-            }
-
-            //Dispose of the job manager at the end
-            indexJobManager.Dispose();
         }
 
         static void WriteError()

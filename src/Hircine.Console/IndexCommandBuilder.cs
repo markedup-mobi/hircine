@@ -12,6 +12,8 @@ namespace Hircine.Console
     /// </summary>
     public static class IndexCommandBuilder
     {
+        public static OptionSet Options { get; set; }
+
         /// <summary>
         /// Yields an initialized IndexBuildCommand object from a set of commandline arguments
         /// </summary>
@@ -19,7 +21,7 @@ namespace Hircine.Console
         /// <param name="showHelp">A flag that indicates whether or not the user simply asked for help</param>
         /// <param name="p">The optionset used to parse the command line</param>
         /// <returns>An IndexBuildCommand object</returns>
-        public static IndexBuildCommand ParseIndexBuildCommand(string[] args, out bool showHelp, out OptionSet p)
+        public static IndexBuildCommand ParseIndexBuildCommand(string[] args, out bool showHelp)
         {
             var buildCommand = new IndexBuildCommand() { };
             showHelp = false;
@@ -29,7 +31,7 @@ namespace Hircine.Console
             var connectionStrings = new List<string>() { };
             var assemblies = new List<string> { };
 
-            p = new OptionSet()
+            Options = new OptionSet()
                         {
                             {
                                 "c|connectionstr=",
@@ -53,7 +55,7 @@ namespace Hircine.Console
                             }
                         };
 
-            p.Parse(args);
+            Options.Parse(args);
 
             //Assign our collected assemblies and connection strings to the command object
             buildCommand.AssemblyPaths = assemblies.ToArray();

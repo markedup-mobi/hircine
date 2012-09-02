@@ -12,10 +12,9 @@ namespace Hircine.Console
         static void Main(string[] args)
         {
             var showHelp = false;
-            OptionSet p = null;
             try
             {
-                var indexCommand = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp, out p);
+                var indexCommand = IndexCommandBuilder.ParseIndexBuildCommand(args, out showHelp);
             }
             catch (OptionException e)
             {
@@ -26,7 +25,7 @@ namespace Hircine.Console
 
             if (showHelp)
             {
-                ShowHelp(p);
+                ShowHelp(IndexCommandBuilder.Options);
             }
         }
 

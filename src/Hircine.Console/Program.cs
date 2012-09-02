@@ -46,7 +46,7 @@ namespace Hircine.Console
             if(assemblyResults.Successes == assemblyResults.JobResults.Count)
             {
                 WriteSuccess();
-                System.Console.WriteLine(string.Format("Loaded all ({0}) assemblies and was able to find indexes inside all of them."));
+                System.Console.WriteLine(string.Format("Loaded all ({0}) assemblies and was able to find indexes inside all of them.", assemblyResults.Successes));
                 WriteStandard();
                 System.Console.WriteLine();
             } else
@@ -67,12 +67,12 @@ namespace Hircine.Console
             }
 
             //Attempt to connect to our databases
-            var connectionResult = indexJobManager.CanConnectToDbs();
             System.Console.WriteLine("Validating RavenDB connections...");
+            var connectionResult = indexJobManager.CanConnectToDbs();
             if(connectionResult.Successes == connectionResult.JobResults.Count)
             {
                 WriteSuccess();
-                System.Console.WriteLine(string.Format("Was able to connect to all ({0}) RavenDB instances successfully."));
+                System.Console.WriteLine(string.Format("Was able to connect to all ({0}) RavenDB instances successfully.", connectionResult.Successes));
                 WriteStandard();
                 System.Console.WriteLine();
             } else

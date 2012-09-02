@@ -1,12 +1,14 @@
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
 bin
 obj
+build
 
 #VS files
 *.suo
 
 # mstest test results
 TestResults
+TestResult.xml
 
 #NuGet
 packages/

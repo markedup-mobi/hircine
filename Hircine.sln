@@ -1,22 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Console", "Hircine.Console.csproj", "{56C66EEE-5956-40E1-8D45-924764A0114B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Console", "src\Hircine.Console\Hircine.Console.csproj", "{56C66EEE-5956-40E1-8D45-924764A0114B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Core", "..\Hircine.Core\Hircine.Core.csproj", "{6645B93A-D5DB-40E0-A3A4-7858C6B49327}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Core", "src\Hircine.Core\Hircine.Core.csproj", "{6645B93A-D5DB-40E0-A3A4-7858C6B49327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Core.Tests", "..\..\tests\Hircine.Core.Tests\Hircine.Core.Tests.csproj", "{90C17657-E465-4365-872B-A5DCB9D581FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Core.Tests", "tests\Hircine.Core.Tests\Hircine.Core.Tests.csproj", "{90C17657-E465-4365-872B-A5DCB9D581FE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D4B9401D-2F30-4F00-B66B-BA7401BA35CD}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.TestIndexes", "tests\Hircine.TestIndexes\Hircine.TestIndexes.csproj", "{252EF250-9E7A-450D-82EB-C128ED36BB02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.TestIndexes", "..\..\tests\Hircine.TestIndexes\Hircine.TestIndexes.csproj", "{252EF250-9E7A-450D-82EB-C128ED36BB02}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Console.Tests", "..\..\tests\Hircine.Console.Tests\Hircine.Console.Tests.csproj", "{36ADAF25-8D58-4A97-8929-25223764C0D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hircine.Console.Tests", "tests\Hircine.Console.Tests\Hircine.Console.Tests.csproj", "{36ADAF25-8D58-4A97-8929-25223764C0D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

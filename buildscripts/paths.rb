@@ -50,8 +50,8 @@ Files = {
 
 	:hircine_core => {
 		:nuspec => "#{Projects[:hircine_core][:id]}.nuspec",
-		:test => "#{Projects[:hircine_core][:test_dir]}.dll"
-		:bin => "#{Projects[:hircine][:dir]}.dll"
+		:test => "#{Projects[:hircine_core][:test_dir]}.dll",
+		:bin => "#{Projects[:hircine_core][:dir]}.dll"
 	},
 
 	:ilmerge_assemblies => [

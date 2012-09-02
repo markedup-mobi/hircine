@@ -1,16 +1,12 @@
 $: << './'
-require "rubygems"
-require "bundler"
-Bundler.setup
-
 require 'albacore'
 require 'version_bumper'
 
 #-----------------------
 # Local dependencies
 #-----------------------
-require 'buildscripts/project_data'
-require 'buildscripts/paths'
+require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/project_data'
+require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/paths'
 
 #-----------------------
 # Environment variables
@@ -25,7 +21,7 @@ desc "Build"
 msbuild :build => :assemblyinfo do |msb|
 	msb.properties :configuration => :Release
 	msb.targets :Clean, :Build #Does the equivalent of a "Rebuild Solution"
-	msb.solution = Files[:solution]
+	msb.solution = File.join(Folders[:root], Files[:solution])
 end
 
 desc "Test"
@@ -62,7 +58,7 @@ end
 
 desc "Creates all of the output folders we need for ILMerge / NuGet"
 task :create_output_folders => :set_output_folders do
-	create_dir(Folders[:build])
+	create_dir(Folders[:out])
 	create_dir(Folders[:nuget_build])
 	create_dir(Folders[:hircine_nuspec][:root])
 	create_dir(Folders[:hircine_nuspec][:lib])
@@ -73,19 +69,17 @@ task :create_output_folders => :set_output_folders do
 end
 
 output :core_static_output => [:create_output_folders] do |out|
-	out.from .
+	out.from '.'
 	out.to Folders[:hircine_core_nuspec][:root]
 	out.file Files[:readme]
 	out.file Files[:license]
-	out.file Files[:VERSION]
 end
 
-output :app_static_output => [:create_output_folders] do |out|
-	out.from .
+output :app_static_output =>  do |out|
+	out.from Folders[:root]
 	out.to Folders[:hircine_nuspec][:root]
 	out.file Files[:readme]
 	out.file Files[:license]
-	out.file Files[:VERSION]
 end
 
 output :core_net40_output => [:core_static_output] do |out|
@@ -98,7 +92,7 @@ end
 output :app_net40_output => [:app_static_output] do |out|
 	out.from Folders[:hircine_bin]
 	out.to Folders[:hircine_nuspec][:net40]
-	out.file Files[:hircine][:bin]
+	out.file Files[:hircine][:bin], :as => 'hircine.exe'
 end
 
 nuspec :core_nuspec do |nuspec|
@@ -111,7 +105,7 @@ nuspec :core_nuspec do |nuspec|
 	nuspec.licenseUrl = Projects[:licenseUrl]
 	nuspec.projectUrl = Projects[:projectUrl]
 	nuspec.dependency "RavenDB.Embedded", "1.0.960"
-	nuspec.output_file = File.join(Folders[:nuget_build], Files[:hircine_core][:nuspec])
+	nuspec.output_file = File.join(Folders[:nuget_build], "#{Projects[:hircine_core][:id]}-v#{env_buildversion}(#{@env_buildconfigname}).nuspec")
 	nuspec.tags = "ravendb, indexes, raven, index"
 end
 
@@ -125,20 +119,20 @@ nuspec :app_nuspec do |nuspec|
 	nuspec.licenseUrl = Projects[:licenseUrl]
 	nuspec.projectUrl = Projects[:projectUrl]
 	nuspec.dependency "Hircine.Core", env_buildversion
-	nuspec.output_file = File.join(Folders[:nuget_build], Files[:hircine][:nuspec])
+	nuspec.output_file = File.join(Folders[:nuget_build], "#{Projects[:hircine][:id]}-v#{env_buildversion}(#{@env_buildconfigname}).nuspec")
 	nuspec.tags = "ravendb, indexes, raven, index"
 end
 
 nugetpack :core_pack => [:test, :core_net40_output, :core_nuspec] do |nuget|
 	nuget.command = Commands[:nuget]
-	nuget.nuspec = File.join(Folders[:nuget_build], Files[:hircine_core][:nuspec])
+	nuget.nuspec = File.join(Folders[:nuget_build], "#{Projects[:hircine_core][:id]}-v#{env_buildversion}(#{@env_buildconfigname}).nuspec")
 	nuget.base_folder = Folders[:hircine_core_nuspec][:root]
 	nuget.output = Folders[:nuget_build]
 end
 
 nugetpack :app_pack => [:test, :app_net40_output, :app_nuspec] do |nuget|
 	nuget.command = Commands[:nuget]
-	nuget.nuspec = File.join(Folders[:nuget_build], Files[:hircine][:nuspec])
+	nuget.nuspec = File.join(Folders[:nuget_build], "#{Projects[:hircine][:id]}-v#{env_buildversion}(#{@env_buildconfigname}).nuspec")
 	nuget.base_folder = Folders[:hircine_nuspec][:root]
 	nuget.output = Folders[:nuget_build]
 end
@@ -146,3 +140,4 @@ end
 task :pack => [:core_pack, :app_pack] do
 	puts "Packing NuGet packages..."
 end
+

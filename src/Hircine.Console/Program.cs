@@ -35,7 +35,12 @@ namespace Hircine.Console
                 return;
             }
 
-            System.Console.WriteLine(string.Format("Hircine Version {0}", Assembly.GetExecutingAssembly().FullName));
+            WriteWarning();
+            System.Console.WriteLine();
+            System.Console.WriteLine(string.Format("Hircine v{0}", Assembly.GetExecutingAssembly().GetName().Version));
+            System.Console.WriteLine("Developed by the fine folks at MarkedUp (http://markedup.com/) - Apache License v2.0");
+            System.Console.WriteLine();
+            WriteStandard();
 
             //Create our job manager for actually building RavenDB indexes
             using (var indexJobManager = new IndexJobManager(indexCommand))
@@ -159,7 +164,7 @@ namespace Hircine.Console
 
         static void WriteWarning()
         {
-            System.Console.ForegroundColor = ConsoleColor.DarkYellow;
+            System.Console.ForegroundColor = ConsoleColor.Yellow;
         }
 
         static void ShowHelp(OptionSet p)

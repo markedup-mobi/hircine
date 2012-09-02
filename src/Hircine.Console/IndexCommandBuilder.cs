@@ -63,6 +63,19 @@ namespace Hircine.Console
 
             showHelp = showHelpClosure;
 
+            if(!showHelp)
+            {
+                if (!buildCommand.AssemblyPaths.Any())
+                {
+                    throw new OptionException("Need at least one assembly in order to build an index", "-a");
+                }
+
+                if(!buildCommand.ConnectionStrings.Any() || !buildCommand.UseEmbedded)
+                {
+                    throw new OptionException("Need at least one connection string OR you need to set the -e flag to true to run against an in-memory database", "-c");
+                }
+            }
+
             return buildCommand;
         }
     }

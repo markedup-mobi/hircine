@@ -19,30 +19,96 @@ def env_buildversion
 	bumper_version.to_s
 end
 
+#-----------------------
+# Control Flow (meant to be called directly)
+#-----------------------
+
+desc "Creates a new build of Hircine"
+task :default => [:build]
+
+desc "Builds and tests Hircine without touching version \#"
+task :test => [:integration_test]
+
+desc "Builds Hircine with new build \#"
+task :build => [:bump_build, :test]
+
+desc "Builds Hircine with new revision \#"
+task :build_revision => [:bump_revision, :test]
+
+desc "Builds Hircine with new minor version \#"
+task :build_minor => [:bump_minor, :test]
+
+desc "Builds Hircine with new major version \#"
+task :build_major => [:bump_major, :test]
+
+desc "Packs the most recent build output into NuGet packages (does not bump versions)"
+task :pack => [:test, :clean_output_folders, :create_output_folders, :core_pack, :app_pack]
+
+#Note - relies on you having an accepted API key on your system
+desc "Pushes updates of all packages to NuGet.org"
+task :push => [:push_core, :push_app]
+
+#-----------------------
+# Building
+#-----------------------
+
 desc "Build"
-msbuild :build => [:assemblyinfo] do |msb|
+msbuild :msbuild => [:assemblyinfo] do |msb|
 	msb.properties :configuration => :Release
 	msb.targets :Clean, :Build #Does the equivalent of a "Rebuild Solution"
 	msb.solution = File.join(Folders[:root], Files[:solution])
 end
 
+#----------------------------------
+# Testing
+#----------------------------------
+
 desc "Test"
-nunit :test => :build do |nunit|
+nunit :nunit_test => :msbuild do |nunit|
 	nunit.command = Commands[:nunit]
 	nunit.options '/framework v4.0.30319'
 
 	nunit.assemblies "#{Folders[:hircine_tests]}/bin/#{@env_buildconfigname}/#{Files[:hircine][:test]}", "#{Folders[:hircine_core_tests]}/bin/#{@env_buildconfigname}/#{Files[:hircine_core][:test]}"
 end
 
-#Task for bumping the version number
-desc "Bumps a new version of Hircine"
-task :bumpVersion do
+desc "Runs an integration test against the currenly built version of hircine"
+hircine :integration_test => [:nunit_test, :set_output_folders] do |hircine|
+	puts "Testing Hircine against embedded database..."
+	hircine.command = File.join(Folders[:hircine_bin], Files[:hircine][:bin])
+	puts "Command path %s" % hircine.command
+	hircine.run_embedded = true #use an emebedded RavenDB instance
+	hircine.assemblies File.join(Folders[:hircine_test_indexes_bin], Files[:hircine_test_indexes][:bin])
+end
+
+#----------------------------------
+# Version Management
+#----------------------------------
+desc "Bumps a new build number of Hircine"
+task :bump_build do
 	bumper_version.bump_build
 	bumper_version.write(File.join(Folders[:root], Files[:version]))
 end
 
+desc "Bumps a new revision number of Hircine"
+task :bump_revision do
+	bumper_version.bump_revision
+	bumper_version.write(File.join(Folders[:root], Files[:version]))
+end
+
+desc "Bumps a minor release number of Hircine"
+task :bump_minor do
+	bumper_version.bump_minor
+	bumper_version.write(File.join(Folders[:root], Files[:version]))
+end
+
+desc "Bumps a major release number of Hircine"
+task :bump_major do
+	bumper_version.bump_major
+	bumper_version.write(File.join(Folders[:root], Files[:version]))
+end
+
 desc "Updates the assembly information for Hircine"
-assemblyinfo :assemblyinfo => :bumpVersion do |asm|
+assemblyinfo :assemblyinfo do |asm|
 	assemblyInfoPath = File.join(Folders[:src], Files[:assembly_info])
 
 	asm.input_file = assemblyInfoPath
@@ -52,6 +118,9 @@ assemblyinfo :assemblyinfo => :bumpVersion do |asm|
 	asm.file_version = env_buildversion
 end
 
+#----------------------------------
+# Output
+#----------------------------------
 desc "Sets the output / bin folders based on the current build configuration"
 task :set_output_folders do
 	Folders[:hircine_bin] = File.join(Folders[:src], Projects[:hircine][:dir],"bin", @env_buildconfigname)
@@ -106,6 +175,10 @@ output :app_net40_output => [:app_static_output] do |out|
 	out.file Files[:hircine][:bin], :as => 'hircine.exe'
 end
 
+#----------------------------------
+# NuSpec
+#----------------------------------
+
 nuspec :core_nuspec do |nuspec|
 	nuspec.id = Projects[:hircine_core][:id]
 	nuspec.version = env_buildversion
@@ -134,6 +207,10 @@ nuspec :app_nuspec do |nuspec|
 	nuspec.tags = "ravendb, indexes, raven, index"
 end
 
+#----------------------------------
+# NuGet (Pack)
+#----------------------------------
+
 nugetpack :core_pack => [:test, :core_net40_output, :core_nuspec] do |nuget|
 	nuget.command = Commands[:nuget]
 	nuget.nuspec = File.join(Folders[:nuget_build], "#{Projects[:hircine_core][:id]}-v#{env_buildversion}(#{@env_buildconfigname}).nuspec")
@@ -148,36 +225,18 @@ nugetpack :app_pack => [:test, :app_net40_output, :app_nuspec] do |nuget|
 	nuget.output = Folders[:nuget_build]
 end
 
-desc "Runs an integration test against the currenly built version of hircine"
-hircine :integration_test => [:test, :set_output_folders] do |hircine|
-	puts "Testing Hircine against embedded database..."
-	hircine.command = File.join(Folders[:hircine_bin], Files[:hircine][:bin])
-	puts "Command path %s" % hircine.command
-	hircine.run_embedded = true #use an emebedded RavenDB instance
-	hircine.assemblies File.join(Folders[:hircine_test_indexes_bin], Files[:hircine_test_indexes][:bin])
-end
-
-desc "Creates NuGet packages for Hircine and Hircine.Core"
-task :pack => [:integration_test, :clean_output_folders, :create_output_folders, :core_pack, :app_pack] do
-	puts "Packing NuGet packages..."
-end
+#----------------------------------
+# NuGet (Push)
+#----------------------------------
 
 desc "Publishes a new verison of the Hircine package to NuGet"
 nugetpush :push_app => [:pack] do |nuget|
     nuget.command = Commands[:nuget]
-    nuget.package = File.join(Folders[:nuget_build], "#{Projects[:hircine][:id]}.#{env_buildversion}.nupkg")
+    nuget.package = File.join(Folders[:root], Folders[:nuget_build], "#{Projects[:hircine][:id]}.#{env_buildversion}.nupkg")
 end
 
 desc "Publishes a new verison of the Hircine.Core package to NuGet"
 nugetpush :push_core => [:pack] do |nuget|
     nuget.command = Commands[:nuget]
-    nuget.package = File.join(Folders[:nuget_build], "#{Projects[:hircine_core][:id]}.#{env_buildversion}.nupkg")
+    nuget.package = File.join(Folders[:root], Folders[:nuget_build], "#{Projects[:hircine_core][:id]}.#{env_buildversion}.nupkg")
 end
-
-#Note - relies on you having an accepted API key on your system
-desc "Pushes updates of all packages to NuGet.org"
-task :push => [:push_core, :push_app] do
-end
-
-
-

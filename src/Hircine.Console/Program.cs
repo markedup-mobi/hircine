@@ -11,7 +11,7 @@ namespace Hircine.Console
 {
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var showHelp = false;
             IndexBuildCommand indexCommand;
@@ -26,13 +26,13 @@ namespace Hircine.Console
                 System.Console.WriteLine(e.Message);
                 WriteStandard();
                 System.Console.WriteLine("Try 'hircine --help' for more information.");
-                return;
+                return -1;
             }
 
             if (showHelp)
             {
                 ShowHelp(IndexCommandParser.Options);
-                return;
+                return 0;
             }
 
             WriteWarning();
@@ -72,7 +72,7 @@ namespace Hircine.Console
                         System.Console.WriteLine("Error message: {0}", errorJob.JobException.Message);
                         System.Console.WriteLine();
                     }
-                    return;
+                    return -1;
                 }
 
                 //Attempt to connect to our databases
@@ -101,7 +101,7 @@ namespace Hircine.Console
                         System.Console.WriteLine("Error message: {0}", errorJob.JobException.Message);
                         System.Console.WriteLine();
                     }
-                    return;
+                    return -1;
                 }
 
                 //And with all of that out of the way, now it's time to actually run our job
@@ -136,12 +136,14 @@ namespace Hircine.Console
                     WriteSuccess();
                     System.Console.WriteLine("Success");
                     WriteStandard();
+                    return 0;
                 }
                 else
                 {
                     WriteError();
                     System.Console.WriteLine("Failure");
                     WriteStandard();
+                    return -1;
                 }
 
             }

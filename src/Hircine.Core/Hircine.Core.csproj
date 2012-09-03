@@ -97,6 +97,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Connectivity\DefaultRavenInstanceFactory.cs" />
     <Compile Include="Connectivity\IRavenInstanceFactory.cs" />
     <Compile Include="Connectivity\RavenConnectionStringBuilder.cs" />

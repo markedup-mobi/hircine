@@ -19,7 +19,7 @@ def env_buildversion
 end
 
 desc "Build"
-msbuild :build => :assemblyinfo do |msb|
+msbuild :build => [:assemblyinfo] do |msb|
 	msb.properties :configuration => :Release
 	msb.targets :Clean, :Build #Does the equivalent of a "Rebuild Solution"
 	msb.solution = File.join(Folders[:root], Files[:solution])
@@ -55,6 +55,12 @@ desc "Sets the output / bin folders based on the current build configuration"
 task :set_output_folders do
 	Folders[:hircine_bin] = File.join(Folders[:src], Projects[:hircine][:dir],"bin", @env_buildconfigname)
 	Folders[:hircine_core_bin] = File.join(Folders[:src], Projects[:hircine_core][:dir],"bin", @env_buildconfigname)
+end
+
+desc "Wipes out the build folder so we have a clean slate to work with"
+task :clean_output_folders => :set_output_folders do
+	puts "Flushing build folder..."
+	flush_dir(Folders[:out])
 end
 
 desc "Creates all of the output folders we need for ILMerge / NuGet"
@@ -140,7 +146,7 @@ nugetpack :app_pack => [:test, :app_net40_output, :app_nuspec] do |nuget|
 	nuget.output = Folders[:nuget_build]
 end
 
-task :pack => [:create_output_folders, :core_pack, :app_pack] do
+task :pack => [:clean_output_folders, :create_output_folders, :core_pack, :app_pack] do
 	puts "Packing NuGet packages..."
 end
 

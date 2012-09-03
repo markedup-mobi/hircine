@@ -93,3 +93,10 @@ def create_dir(dirName)
 		FileUtils.mkdir(dirName) #creates the /build directory
 	end
 end
+
+#Deletes a directory from the tree (to keep the build folder clean)
+def flush_dir(dirName)
+	if File.directory?(dirName)
+		FileUtils.remove_dir(dirName, true)
+	end
+end

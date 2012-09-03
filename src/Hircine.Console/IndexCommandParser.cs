@@ -50,6 +50,8 @@ namespace Hircine.Console
                             {
                                 "f|continueonfailure", "If this job is being run sequentially, continue running all jobs even if there are failures",
                                 v => {if (v != null) buildCommand.ContinueJobOnFailure = true; }},
+                                {"u|nossl", "Useg username / password authentication without an SSL connection, even though it's unsafe",
+                                v => {if(v != null) buildCommand.UseUserNamePasswordWithoutSSL = true;}},
                             {
                                 "h|help", "show this message and exit", v => showHelpClosure = v != null
                             }

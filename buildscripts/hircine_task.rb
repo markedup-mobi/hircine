@@ -1,7 +1,7 @@
 # Albacore build task for running Hircine
 
 require 'albacore/albacoretask'
-class HircineBuild
+class Hircine
 	include Albacore::Task 
 	include Albacore::RunCommand
 

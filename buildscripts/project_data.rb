@@ -22,5 +22,12 @@ Projects = {
 		:dir => "Hircine.Core",
 		:test_dir => "Hircine.Core.Tests",
 		:title => "Hircine Core"
+	},
+	:hircine_test_indexes => {
+		:id => "Hircine.TestIndexes",
+		:description => "Sample test indexes used in the course of testing Hircine.",
+		:authors => "Aaron Stannard",
+		:dir => "Hircine.TestIndexes",
+		:title => "Hircine RavenDB Test Indexes"
 	}
 }

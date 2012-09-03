@@ -8,6 +8,7 @@ require 'version_bumper'
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/project_data'
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/paths'
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/albacore_mods.rb'
+require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/hircine_task.rb'
 
 #-----------------------
 # Environment variables
@@ -55,6 +56,7 @@ desc "Sets the output / bin folders based on the current build configuration"
 task :set_output_folders do
 	Folders[:hircine_bin] = File.join(Folders[:src], Projects[:hircine][:dir],"bin", @env_buildconfigname)
 	Folders[:hircine_core_bin] = File.join(Folders[:src], Projects[:hircine_core][:dir],"bin", @env_buildconfigname)
+	Folders[:hircine_test_indexes_bin] = File.join(Folders[:tests], Projects[:hircine_test_indexes][:dir],"bin", @env_buildconfigname)
 end
 
 desc "Wipes out the build folder so we have a clean slate to work with"
@@ -146,7 +148,16 @@ nugetpack :app_pack => [:test, :app_net40_output, :app_nuspec] do |nuget|
 	nuget.output = Folders[:nuget_build]
 end
 
-task :pack => [:clean_output_folders, :create_output_folders, :core_pack, :app_pack] do
+desc "Runs an integration test against the currenly built version of hircine"
+hircine :integration_test => [:test, :set_output_folders] do |hircine|
+	puts "Testing Hircine against embedded database..."
+	hircine.command = File.join(Folders[:hircine_bin], Files[:hircine][:bin])
+	puts "Command path %s" % hircine.command
+	hircine.run_embedded = true #use an emebedded RavenDB instance
+	hircine.assemblies File.join(Folders[:hircine_test_indexes_bin], Files[:hircine_test_indexes][:bin])
+end
+
+task :pack => [:integration_test, :clean_output_folders, :create_output_folders, :core_pack, :app_pack] do
 	puts "Packing NuGet packages..."
 end
 

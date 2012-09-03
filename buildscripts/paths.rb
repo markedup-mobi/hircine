@@ -33,6 +33,7 @@ Folders={
 
 	:hircine_bin => 'placeholder - specify build environment',
 	:hircine_core_bin => 'placeholder - specify build environment',
+	:hircine_test_indexes_bin => 'placeholder - specify build environment',
 }
 
 Files = {
@@ -52,6 +53,10 @@ Files = {
 		:nuspec => "#{Projects[:hircine_core][:id]}.nuspec",
 		:test => "#{Projects[:hircine_core][:test_dir]}.dll",
 		:bin => "#{Projects[:hircine_core][:dir]}.dll"
+	},
+
+	:hircine_test_indexes => {
+		:bin => "#{Projects[:hircine_test_indexes][:dir]}.dll"
 	},
 
 	:ilmerge_assemblies => [

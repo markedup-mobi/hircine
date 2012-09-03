@@ -1,4 +1,8 @@
 $: << './'
+require "rubygems"
+require "bundler"
+Bundler.setup
+
 require 'albacore'
 require 'version_bumper'
 
@@ -232,11 +236,11 @@ end
 desc "Publishes a new verison of the Hircine package to NuGet"
 nugetpush :push_app => [:pack] do |nuget|
     nuget.command = Commands[:nuget]
-    nuget.package = File.join(Folders[:root], Folders[:nuget_build], "#{Projects[:hircine][:id]}.#{env_buildversion}.nupkg")
+    nuget.package = File.join(Folders[:root], Folders[:nuget_build], "#{Projects[:hircine][:id]}.#{env_buildversion}.nupkg").gsub("/","\\")
 end
 
 desc "Publishes a new verison of the Hircine.Core package to NuGet"
 nugetpush :push_core => [:pack] do |nuget|
     nuget.command = Commands[:nuget]
-    nuget.package = File.join(Folders[:root], Folders[:nuget_build], "#{Projects[:hircine_core][:id]}.#{env_buildversion}.nupkg")
+    nuget.package = File.join(Folders[:root], Folders[:nuget_build], "#{Projects[:hircine_core][:id]}.#{env_buildversion}.nupkg").gsub("/","\\")
 end

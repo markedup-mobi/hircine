@@ -157,7 +157,27 @@ hircine :integration_test => [:test, :set_output_folders] do |hircine|
 	hircine.assemblies File.join(Folders[:hircine_test_indexes_bin], Files[:hircine_test_indexes][:bin])
 end
 
+desc "Creates NuGet packages for Hircine and Hircine.Core"
 task :pack => [:integration_test, :clean_output_folders, :create_output_folders, :core_pack, :app_pack] do
 	puts "Packing NuGet packages..."
 end
+
+desc "Publishes a new verison of the Hircine package to NuGet"
+nugetpush :push_app => [:pack] do |nuget|
+    nuget.command = Commands[:nuget]
+    nuget.package = File.join(Folders[:nuget_build], "#{Projects[:hircine][:id]}.#{env_buildversion}.nupkg")
+end
+
+desc "Publishes a new verison of the Hircine.Core package to NuGet"
+nugetpush :push_core => [:pack] do |nuget|
+    nuget.command = Commands[:nuget]
+    nuget.package = File.join(Folders[:nuget_build], "#{Projects[:hircine_core][:id]}.#{env_buildversion}.nupkg")
+end
+
+#Note - relies on you having an accepted API key on your system
+desc "Pushes updates of all packages to NuGet.org"
+task :push => [:push_core, :push_app] do
+end
+
+
 

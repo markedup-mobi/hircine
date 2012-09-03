@@ -177,6 +177,10 @@ output :app_net40_output => [:app_static_output] do |out|
 	create_dir(Folders[:hircine_nuspec][:lib])
 	out.to Folders[:hircine_nuspec][:net40]
 	out.file Files[:hircine][:bin], :as => 'hircine.exe'
+	Files[:nuspec_assemblies].each do |assembly|
+		puts assembly
+		out.file assembly
+	end
 end
 
 #----------------------------------
@@ -206,7 +210,6 @@ nuspec :app_nuspec do |nuspec|
 	nuspec.language = Projects[:language]
 	nuspec.licenseUrl = Projects[:licenseUrl]
 	nuspec.projectUrl = Projects[:projectUrl]
-	nuspec.dependency "Hircine.Core", env_buildversion
 	nuspec.output_file = File.join(Folders[:nuget_build], "#{Projects[:hircine][:id]}-v#{env_buildversion}(#{@env_buildconfigname}).nuspec")
 	nuspec.tags = "ravendb, indexes, raven, index"
 end

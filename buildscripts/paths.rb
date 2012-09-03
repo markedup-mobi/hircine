@@ -59,9 +59,8 @@ Files = {
 		:bin => "#{Projects[:hircine_test_indexes][:dir]}.dll"
 	},
 
-	:ilmerge_assemblies => [
+	:nuspec_assemblies => [
 		#Hircine binaries
-		'Hircine.Console.exe', 
 		'Hircine.Core.dll',
 
 		#RavenDB client assemblies

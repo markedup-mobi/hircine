@@ -33,6 +33,7 @@ Folders={
 
 	:hircine_bin => 'placeholder - specify build environment',
 	:hircine_core_bin => 'placeholder - specify build environment',
+	:hircine_test_indexes_bin => 'placeholder - specify build environment',
 }
 
 Files = {
@@ -54,9 +55,12 @@ Files = {
 		:bin => "#{Projects[:hircine_core][:dir]}.dll"
 	},
 
-	:ilmerge_assemblies => [
+	:hircine_test_indexes => {
+		:bin => "#{Projects[:hircine_test_indexes][:dir]}.dll"
+	},
+
+	:nuspec_assemblies => [
 		#Hircine binaries
-		'Hircine.Console.exe', 
 		'Hircine.Core.dll',
 
 		#RavenDB client assemblies

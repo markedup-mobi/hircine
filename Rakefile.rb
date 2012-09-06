@@ -11,7 +11,6 @@ require 'version_bumper'
 #-----------------------
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/project_data'
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/paths'
-require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/albacore_mods.rb'
 require File.expand_path(File.dirname(__FILE__)) + '/buildscripts/hircine_task.rb'
 
 #-----------------------

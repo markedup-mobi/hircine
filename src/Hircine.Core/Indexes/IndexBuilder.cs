@@ -22,6 +22,15 @@ namespace Hircine.Core.Indexes
 
         private readonly string _connectionString;
 
+        public IndexBuilder(IDocumentStore store, Assembly[] indexAssemblies) : this(store, indexAssemblies, string.Empty)
+        {
+        }
+
+        public IndexBuilder(IDocumentStore store, Assembly indexAssembly)
+            : this(store, new[] { indexAssembly })
+        {
+        }
+
         public IndexBuilder(IDocumentStore store, Assembly[] indexAssemblies, string connectionString)
         {
             _documentStore = store;
@@ -33,9 +42,21 @@ namespace Hircine.Core.Indexes
         {
         }
 
-        public void StartIndexing()
+        public void StartIndexing(Action<IndexBuildResult> progressCallBack = null)
         {
-            if (string.IsNullOrEmpty(_connectionString) || string.IsNullOrWhiteSpace(_connectionString)) return;
+            var indexBuildResult = new IndexBuildResult() { IndexName = "StartIndexing", ConnectionString = _documentStore.Identifier };
+
+            if (string.IsNullOrEmpty(_connectionString) || string.IsNullOrWhiteSpace(_connectionString))
+            {
+                if (progressCallBack != null)
+                {
+                    indexBuildResult.Result = BuildResult.Cancelled;
+                    indexBuildResult.BuildException = new Exception("No connection string provided");
+                    progressCallBack.Invoke(indexBuildResult);
+                }
+
+                return;
+            }
  
             //If RavenDB finds any connection string errors it will throw them here, and we will pass that back to the client as is.
             var connectionStringOptions = RavenConnectionStringParser.ParseNetworkedDbOptions(_connectionString);
@@ -52,17 +73,40 @@ namespace Hircine.Core.Indexes
                         webClient.Credentials = connectionStringOptions.Credentials;
                     }
                     var result = webClient.UploadString(new Uri(new Uri(_documentStore.Url), "/admin/startindexing"), "POST", "");
+
+                    indexBuildResult.Result = BuildResult.Success;
+                    if (progressCallBack != null)
+                    {
+                        progressCallBack.Invoke(indexBuildResult);
+                    }
                 }
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Unable to start indexing on database {0}", _documentStore.Identifier), e);
+                if (progressCallBack != null)
+                {
+                    indexBuildResult.Result = BuildResult.Failed;
+                    indexBuildResult.BuildException = e;
+                    progressCallBack.Invoke(indexBuildResult);
+                }
             }
         }
 
-        public void StopIndexing()
+        public void StopIndexing(Action<IndexBuildResult> progressCallBack = null)
         {
-            if (string.IsNullOrEmpty(_connectionString) || string.IsNullOrWhiteSpace(_connectionString)) return;
+            var indexBuildResult = new IndexBuildResult() { IndexName = "StopIndexing", ConnectionString = _documentStore.Identifier };
+
+            if (string.IsNullOrEmpty(_connectionString) || string.IsNullOrWhiteSpace(_connectionString))
+            {
+                if (progressCallBack != null)
+                {
+                    indexBuildResult.Result = BuildResult.Cancelled;
+                    indexBuildResult.BuildException = new Exception("No connection string provided");
+                    progressCallBack.Invoke(indexBuildResult);
+                }
+
+                return;
+            }
 
             //If RavenDB finds any connection string errors it will throw them here, and we will pass that back to the client as is.
             var connectionStringOptions = RavenConnectionStringParser.ParseNetworkedDbOptions(_connectionString);
@@ -79,11 +123,22 @@ namespace Hircine.Core.Indexes
                         webClient.Credentials = connectionStringOptions.Credentials;
                     }
                     var result = webClient.UploadString(new Uri(new Uri(_documentStore.Url), "/admin/stopindexing"), "POST", "");
+
+                    indexBuildResult.Result = BuildResult.Success;
+                    if (progressCallBack != null)
+                    {
+                        progressCallBack.Invoke(indexBuildResult);
+                    }
                 }
             }
             catch (Exception e)
             {
-                throw new Exception(string.Format("Unable to stop indexing on database {0}", _documentStore.Identifier), e);
+                if (progressCallBack != null)
+                {
+                    indexBuildResult.Result = BuildResult.Failed;
+                    indexBuildResult.BuildException = e;
+                    progressCallBack.Invoke(indexBuildResult);
+                }
             }
         }
 

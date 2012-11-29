@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Hircine.Core.Connectivity;
 using Hircine.Core.Runtime;
 using Raven.Client;
 using Raven.Client.Indexes;
@@ -18,14 +20,71 @@ namespace Hircine.Core.Indexes
 
         private readonly Assembly[] _assemblies;
 
-        public IndexBuilder(IDocumentStore store, Assembly[] indexAssemblies)
+        private readonly string _connectionString;
+
+        public IndexBuilder(IDocumentStore store, Assembly[] indexAssemblies, string connectionString)
         {
             _documentStore = store;
             _assemblies = indexAssemblies;
+            _connectionString = connectionString;
         }
 
-        public IndexBuilder(IDocumentStore store, Assembly indexAssembly) : this(store, new[]{indexAssembly})
+        public IndexBuilder(IDocumentStore store, Assembly indexAssembly, string connectionString) : this(store, new[]{indexAssembly}, connectionString)
         {
+        }
+
+        public void StartIndexing()
+        {
+            if (string.IsNullOrEmpty(_connectionString) || string.IsNullOrWhiteSpace(_connectionString)) return;
+ 
+            //If RavenDB finds any connection string errors it will throw them here, and we will pass that back to the client as is.
+            var connectionStringOptions = RavenConnectionStringParser.ParseNetworkedDbOptions(_connectionString);
+            try
+            {
+                using (var webClient = new WebClient())
+                {
+                    if (connectionStringOptions.Credentials == null)
+                    {
+                        webClient.UseDefaultCredentials = true;
+                    }
+                    else
+                    {
+                        webClient.Credentials = connectionStringOptions.Credentials;
+                    }
+                    var result = webClient.UploadString(new Uri(new Uri(_documentStore.Url), "/admin/startindexing"), "POST", "");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Format("Unable to start indexing on database {0}", _documentStore.Identifier), e);
+            }
+        }
+
+        public void StopIndexing()
+        {
+            if (string.IsNullOrEmpty(_connectionString) || string.IsNullOrWhiteSpace(_connectionString)) return;
+
+            //If RavenDB finds any connection string errors it will throw them here, and we will pass that back to the client as is.
+            var connectionStringOptions = RavenConnectionStringParser.ParseNetworkedDbOptions(_connectionString);
+            try
+            {
+                using (var webClient = new WebClient())
+                {
+                    if (connectionStringOptions.Credentials == null)
+                    {
+                        webClient.UseDefaultCredentials = true;
+                    }
+                    else
+                    {
+                        webClient.Credentials = connectionStringOptions.Credentials;
+                    }
+                    var result = webClient.UploadString(new Uri(new Uri(_documentStore.Url), "/admin/stopindexing"), "POST", "");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(string.Format("Unable to stop indexing on database {0}", _documentStore.Identifier), e);
+            }
         }
 
         /// <summary>

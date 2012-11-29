@@ -54,6 +54,9 @@ namespace Hircine.Console
                                 "n|nossl", "Use username / password authentication without an SSL connection, even though it's unsafe",
                                 v => {if(v != null) buildCommand.UseUserNamePasswordWithoutSSL = true;}},
                             {
+                                "p|pauseindexing", "Have the remote server pause indexing while we attempt to build indexes (sequential-mode only)",
+                                v => {if(v != null) buildCommand.PauseIndexing = true;}},
+                            {
                                 "h|help", "show this message and exit", v => showHelpClosure = v != null
                             }
                         };
@@ -76,6 +79,12 @@ namespace Hircine.Console
                 if(!buildCommand.ConnectionStrings.Any() && !buildCommand.UseEmbedded)
                 {
                     throw new OptionException("Need at least one connection string OR you need to set the -e flag to true to run against an in-memory database", "-c");
+                }
+
+                if (!buildCommand.ExecuteJobsSequentially && buildCommand.PauseIndexing)
+                {
+                    throw new OptionException("Index building can only be paused when the -s|sequential flag is set.",
+                                              "-p");
                 }
             }
 

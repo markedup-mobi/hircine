@@ -5,6 +5,7 @@ build
 
 #VS files
 *.suo
+*.user
 
 # mstest test results
 TestResults

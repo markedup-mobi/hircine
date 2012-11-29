@@ -37,5 +37,10 @@
         /// without SSL. This field will suppress that error when set to true.
         /// </summary>
         public bool UseUserNamePasswordWithoutSSL { get; set; }
+
+        /// <summary>
+        /// Pause Raven's indexing system while we wait
+        /// </summary>
+        public bool PauseIndexing { get; set; }
     }
 }

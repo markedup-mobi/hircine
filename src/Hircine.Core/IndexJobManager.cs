@@ -223,7 +223,7 @@ namespace Hircine.Core
             foreach (var ravenInstance in RavenInstances)
             {
                 //Create a new index builder
-                using (var indexBuilder = new IndexBuilder(ravenInstance.Value, IndexAssemblies.ToArray()))
+                using (var indexBuilder = new IndexBuilder(ravenInstance.Value, IndexAssemblies.ToArray(), ravenInstance.Key))
                 {
                     //Stop indexing
                     if(BuildInstructions.PauseIndexing)

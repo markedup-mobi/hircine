@@ -225,13 +225,25 @@ namespace Hircine.Core
                 //Create a new index builder
                 using (var indexBuilder = new IndexBuilder(ravenInstance.Value, IndexAssemblies.ToArray()))
                 {
+                    //Stop indexing
+                    if(BuildInstructions.PauseIndexing)
+                        indexBuilder.StopIndexing(progressCallback);
+
                     var buildReport = indexBuilder.Run(progressCallback);
                     reports.Add(buildReport);
                     if (buildReport.Failed > 0 && !BuildInstructions.ContinueJobOnFailure)
                     {
+                        //Resume indexing
+                        if (BuildInstructions.PauseIndexing)
+                            indexBuilder.StartIndexing(progressCallback);
+
                         //Exit the loop
                         break;
                     }
+
+                    //Resume indexing
+                    if (BuildInstructions.PauseIndexing)
+                        indexBuilder.StartIndexing(progressCallback);
                 }
 
             }
